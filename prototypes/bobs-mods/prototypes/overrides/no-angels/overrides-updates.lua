@@ -62,22 +62,25 @@ if mods['bobplates'] then
         TECHNOLOGY('bob-invar-processing'):remove_prereq('logistic-science-pack')
         TECHNOLOGY('bob-invar-processing'):remove_pack('logistic-science-pack')
 	end
-    RECIPE('bob-silicon-nitride'):add_ingredient({type = "item", name = "ceramic", amount = 5})
+    -- ceramic is pyhightech's, and nothing about bobplates guarantees that mod
+    if mods['pyhightech'] then
+        RECIPE('bob-silicon-nitride'):add_ingredient({type = "item", name = "ceramic", amount = 5})
+    end
 
     if settings.startup["bobmods-plates-purewater"].value and settings.startup["bobmods-assembly-distilleries"].value then
         for i, machine in pairs(data.raw['assembling-machine']) do
             for c, machinecat in pairs(machine.crafting_categories) do
-                if machinecat == 'distillery' then
+                if machinecat == 'bob-distillery' then
                     machine.crafting_categories[c] = nil
                 end
             end
         end
 
-        bobmods.lib.machine.add_category(data.raw['assembling-machine']['bob-distillery'], 'distillery')
-        bobmods.lib.machine.add_category(data.raw['assembling-machine']['bob-distillery-2'], 'distillery')
-        bobmods.lib.machine.add_category(data.raw['assembling-machine']['bob-distillery-3'], 'distillery')
-        bobmods.lib.machine.add_category(data.raw['assembling-machine']['bob-distillery-4'], 'distillery')
-        bobmods.lib.machine.add_category(data.raw['assembling-machine']['bob-distillery-5'], 'distillery')
+        -- Bob's 2.x renamed the category and made the distilleries furnaces rather than
+        -- assembling machines, so keep the category on them after the sweep above
+        for _, distillery in pairs({'bob-distillery', 'bob-distillery-2', 'bob-distillery-3', 'bob-distillery-4', 'bob-distillery-5'}) do
+            bobmods.lib.machine.add_category(data.raw.furnace[distillery], 'bob-distillery')
+        end
 
         data.raw.furnace['bob-distillery'].allowed_effects = {"speed", "consumption"}
         data.raw.furnace['bob-distillery-2'].allowed_effects = {"speed", "consumption"}
@@ -113,11 +116,11 @@ if mods['bobelectronics'] then
 		data.raw.recipe['module-processer-board-3'] = nil
         data.raw.recipe['multi-layer-circuit-board'] = nil
         data.raw.recipe['bob-processing-electronics'] = nil
-        data.raw.recipe['advanced-processing-unit'] = nil
+        data.raw.recipe['bob-advanced-processing-unit'] = nil
 
-        fun.global_prereq_replacer('advanced-electronics-3', 'nano-tech')
+        fun.global_prereq_replacer('bob-advanced-processing-unit', 'nano-tech')
 
-        data.raw.technology['advanced-electronics-3'] = nil
+        data.raw.technology['bob-advanced-processing-unit'] = nil
 
         RECIPE('pcb4'):add_ingredient({type = "fluid", name = "bob-ferric-chloride-solution", amount = 100})
 
@@ -151,10 +154,10 @@ if mods['bobrevamp'] then
             bobmods.lib.recipe.remove_result('bob-ammonium-chloride-reprocessing', 'ammonia')
                 bobmods.lib.recipe.add_result("bob-ammonium-chloride-reprocessing", { type = "fluid", name = "ammonia", amount = 30 })
 
-            bobmods.lib.tech.add_prerequisite('nuclear-power-mk02', 'rtg')
+            bobmods.lib.tech.add_prerequisite('nuclear-power-mk02', 'bob-rtg')
             bobmods.lib.tech.add_prerequisite('spidertron', 'nuclear-power-mk02')
 
-            fun.tech_remove_recipe('rtg', 'rtg')
+            fun.tech_remove_recipe('bob-rtg', 'bob-rtg')
         end
     end
 end

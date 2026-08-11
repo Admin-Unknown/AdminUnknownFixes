@@ -1,0 +1,13 @@
+{
+	"name": "0-auf-extend-guard",
+	"version": "0.0.1",
+	"factorio_version": "2.1",
+	"title": "AUF Extend Guard",
+	"author": "AdminUnknownFixes",
+	"contact": "jakegodding@gmail.com",
+	"homepage": "https://github.com/jakegodding/AdminUnknownFixes",
+	"description": "Companion to AdminUnknownFixes. Factorio reads the numbered entries of the list handed to data:extend and ignores anything else, so a mod that leaves a stray field there is quietly forgiven. PyPostProcessing replaces data:extend with one that walks every key, and reads that stray field as a prototype, which is what stops the load in bobpower 3.0.0. This mod hands the walker only the entries the game itself would have used. The name begins with a zero on purpose: this has to be in place before the mod that trips over it, and AdminUnknownFixes loads too late to do it.",
+	"dependencies": [
+		"base >= 2.1.0"
+	]
+}

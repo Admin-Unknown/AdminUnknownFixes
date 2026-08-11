@@ -1,12 +1,12 @@
 {
 	"name": "AdminUnknownFixes",
-	"version": "2.1.12",
+	"version": "2.1.20",
 	"factorio_version": "2.1",
 	"title": "AdminUnknownFixes",
 	"author": "KingArthur, Erkigmo, AdminUnknown",
 	"contact": "jakegodding@gmail.com",
 	"homepage": "https://github.com/jakegodding/AdminUnknownFixes",
-	"description": "Bridge mod for Pyanodon + Angel's + Bob's mod compatibility. Merges duplicate items, fixes progression, and balances recipes across mod packs. If PyPostProcessing still requires the PyCoalTBaA stub when Angel's Refining is active, download https://github.com/jakegodding/AdminUnknownFixes/raw/main/stubs/PyCoalTBaA_0.0.7.zip into your Factorio mods folder; see GitHub README for steps. Run scripts/package-mods.ps1 to build release zips under dist/ (the PyCoalTBaA stub zip is also copied to stubs/ in the repo).",
+	"description": "Bridge mod for Pyanodon + Angel's + Bob's mod compatibility. Merges duplicate items, fixes progression, and balances recipes across mod packs. If PyPostProcessing still requires the PyCoalTBaA stub when Angel's Refining is active, download https://github.com/jakegodding/AdminUnknownFixes/raw/main/stubs/PyCoalTBaA_0.0.7.zip into your Factorio mods folder; see GitHub README for steps. If bobpower stops the load with an error in pypostprocessing's metas.lua, add https://github.com/jakegodding/AdminUnknownFixes/raw/main/stubs/0-auf-extend-guard_0.0.1.zip as well: it has to load before bobpower, which this mod cannot. Run scripts/package-mods.ps1 to build release zips under dist/ (the PyCoalTBaA stub zip is also copied to stubs/ in the repo).",
 	"dependencies": [
 	"base >= 2.1.0",
 	"pycoalprocessing >= 3.1.0",

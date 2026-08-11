@@ -1,4 +1,92 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.20
+Date: 2026-08-11
+  Bugfixes:
+    - The repair for bobpower released in 2.1.19 could not work from here, and this release ships it as a second mod, 0-auf-extend-guard, which needs installing alongside this one. bobpower's data stage runs before ours, so the tolerant data:extend was arriving after the mod it was meant to catch
+    - We are later in the load than the name suggests. Requiring pycoalprocessing holds this mod behind everything that sorts before pycoalprocessing does, which is every Bob mod. Nothing about our own name changes that, and the requirement cannot go: every override in here is written to run after the mods it overrides
+    - The new mod requires nothing at all and its name begins with a zero, so it runs before any mod has had the chance to hand anything to data:extend. Loading that early means pypostprocessing wraps data:extend after it rather than before, and a plain wrapper would sit underneath and never see the list, so it answers for the field itself instead: reads get its own version, writes are kept as what that version should call. Whoever wraps it later ends up inside it
+    - It is only needed for a mod that leaves a stray field in the list it hands to data:extend, and bobpower 3.0.0 is the only one in the sources checked. It is harmless otherwise
+    - The copy of this that lives in AdminUnknownFixes stays for mods that load after us, and now stands aside when the new mod is present. Both at once would be one too many: ours would read the field, find the guard, and put itself between the guard and pypostprocessing, whose metatables would then stop being attached
+  Modding:
+    - Both packaging scripts now build every companion mod from a list of folders rather than naming the one, and copy each zip into stubs/ for direct download. The README documents what each companion is for and why it cannot live in the main mod
+---------------------------------------------------------------------------------------------------
+Version: 2.1.19
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on turning bobpower on, reported against pypostprocessing's metas.lua from inside bobpower's own fluid generator file. The hydrazine generator item there closes one line early, leaving its weight sitting in the list handed to data:extend rather than in the item it belongs to
+    - Factorio reads the numbered entries of that list and ignores anything else, so bobpower is fine on its own and has probably been like this for a while. pypostprocessing replaces data:extend with one that walks every key to attach its metatables, and reads that stray weight as though it were a prototype
+    - Neither mod can see the other and the file cannot be edited from here, so data:extend now passes on only the entries the game itself would have used, and says in the log what it left behind. Any mod loading after us with the same slip is covered, and the snapshot of upstream sources was checked for others: bobpower is the only one
+    - This one depends on load order in a way worth writing down. It works because nothing sorts this mod after an unrelated one, so our data stage runs before bobpower's. Adding bobpower to our dependencies would move us behind it and quietly undo the fix
+---------------------------------------------------------------------------------------------------
+Version: 2.1.18
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the loop in the technology tree between angels-advanced-chemistry-5, angels-nitrogen-processing-4, rocket-fuel, kovarex-enrichment-process and utility-science-pack. Angel's has advanced chemistry 5 cost utility science packs and nitrogen processing 4 wait for advanced chemistry 5, while the road to the utility pack runs back through nitrogen processing 4, so the two of them close a circle
+    - The line that breaks it has been here all along, sat behind checks for pyalienlife and pypetroleumhandling that belong to the py science pack swap on the line below it. Nothing about the loop depends on which py mods are installed, so the removal now happens wherever angelspetrochem does
+    - It also drops the utility pack from what nitrogen processing 4 costs, which matters for the same reason the prerequisite did: the pack is unlocked by a technology that waits on nitrogen processing 4, so charging that technology in the pack it leads to would be a lock in its own right even with the tree untangled
+  Modding:
+    - The technology tree is walked at the end of the load, and a loop found there is written out in full, naming every technology in it and which prerequisite was dropped to break it. The game's own message names the technologies but not what put them in that order, which is the part that costs the afternoon
+    - Breaking it means the game still starts, on one prerequisite fewer. The cut falls on whichever link closes the circle rather than on whichever link deserves to go, so a loop reported in the log is still worth a considered fix here. Run against this release's loop it happens to pick the same link by itself
+---------------------------------------------------------------------------------------------------
+Version: 2.1.17
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on the lab. Py replaces the vanilla lab with a five by five one and Bob's chains that lab to its own three by three bob-lab-2, and an upgrade is only allowed between two buildings of the same size. Neither mod is wrong on its own and neither can see the other, so the pair only fails once both are installed
+    - Bob's burner lab chains the other way into the same lab, so that link was the next one to fail. Both are now dropped rather than the one that happened to be reported
+    - Every upgrade link is checked at the end of the load, against all of what the game asks of one: the two buildings must be the same size, collide with the same things and share a fast replaceable group, and the target must be minable, not flagged as unupgradable, and built by an item that is still visible. That last one is how the item replacer can break a link it never touched, which is what the chemical plant and refinery fix has been working around by name
+    - A link that cannot stand is removed rather than either building being resized, since a building whose footprint no longer matches its graphics is worse than an upgrade planner that has forgotten one step. Nothing already built changes, and each removal says in the log which building and which condition it was
+---------------------------------------------------------------------------------------------------
+Version: 2.1.16
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on bob-heat-shield. The technology was being given py-science-pack-3 to research with from behind checks for bobrevamp and angelssmelting, but the pack and the technology named after it are both pyalienlife's. A science pack ends up in the technology's unit ingredients, so a missing one is reported against the technology rather than the line that added it
+    - The same pack is added to five angelsindustries rocket technologies, which needed the same check
+    - The helper that rewrites a technology to cost one py science pack now returns early if that pack does not exist, which covers all eight technologies it is used on
+    - Prerequisites naming a technology from a mod that is not installed fail the same way, and four were doing it: the acetylene technology is pyfusionenergy's rather than pyrawores', the seaweed one pyalienlife's rather than angelsbioprocessing's, and the energy shield one bobequipment's rather than bobclasses'
+    - The alien artifact recipes are unlocked by bobtech's alien research, so that mod is now part of what the file is loaded for alongside bobenemies and pyalienlife
+  Modding:
+    - check-optional-deps.ps1 reads science packs, lab inputs and technology prerequisites and unlocks. A pack is not an ingredient in the sense the script understood, and a prerequisite is just a name in a list until the technology is validated, so none of these were being looked at. Adding them turned up the four prerequisite bugs above before they could each cost a load
+    - It also reads ingredients written as a name and a count rather than a typed table, which is the form a technology unit takes
+    - It understands a function that bails out at the top rather than wrapping its body, and it leaves Angel's recipe builder fallback lists alone, since those are lists of alternatives where a name being absent is the point
+---------------------------------------------------------------------------------------------------
+Version: 2.1.15
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on alien-from-poor. The four alien artifact recipes are crafted in a genlab out of pyalienlife's samples, serum and blood, but they were only behind a check for bobenemies, which supplies the artifacts and nothing else. Without pyalienlife the genlab crafting category does not exist and the first of the four recipes takes the load down with it
+    - The two recipes in that file that also need pyalternativeenergy for fatty acids and pyfusionenergy for super alloy now check for those mods in turn
+    - Guard the rest of the overrides that reach into a mod the surrounding condition does not imply: ceramic in the silicon nitride recipe is pyhightech's under a bobplates check, graphite and saps in the heat shield tile are pyhightech's and pyalienlife's under a bobrevamp check, small parts are pypetroleumhandling's under pyrawores, pyfusionenergy and angelsindustries checks, carbolic oil is pypetroleumhandling's under pyhardmode, and kerosene is pyrawores' rather than pypetroleumhandling's
+    - The two ores that are switched to mining with a fluid now check that the basic-with-fluid resource category exists first. It is pyalienlife's, and without it the ore was being told to require a fluid its category cannot support
+    - The seaweed to coal gas recipe checks for seaweed itself, since angelsbioprocessing having the algae says nothing about pyalienlife being installed
+  Modding:
+    - check-optional-deps.ps1 now treats a mod check as proof of that mod's own hard dependencies, which is what most of these guards were quietly relying on: a block behind pyalternativeenergy may use pyalienlife's prototypes freely because the one cannot load without the other. That alone accounted for more than half of what it had been reporting
+    - It reads categories and subgroups as well, because a recipe can be correct on every ingredient and still fail on the building it is crafted in. That is the shape of this release's crash, and it found a second one the same day
+    - It skips files nothing requires, rather than reporting problems in code the game never reaches, and it follows the settings and control entry points instead of only the data stage ones
+    - It reads conditions that run over several lines, so an existence check written under the if it belongs to now counts
+---------------------------------------------------------------------------------------------------
+Version: 2.1.14
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on coalgas-from-seaweed. Angel's prefixed its item subgroups as well as its recipe categories, so the recipe belongs in angels-bio-processing-green. This is the same shape of failure as the category one in 2.1.13: the field is only resolved when prototypes are validated, so the recipe is blamed rather than the line that set it
+    - bobrevamp renamed its RTG technology and recipe to bob-rtg, which left the sodium carbonate recipe unlocking a technology that does not exist and the two prerequisite edits beside it doing nothing
+    - bobelectronics renamed advanced-electronics-3 to bob-advanced-processing-unit and kept the old name only on the icon file, so the pyhightech branch was re-parenting and deleting a technology that was no longer there
+    - The clarifier crafting speed now checks that the furnace-to-assembling-machine conversion above it actually ran, rather than assuming a machine it may not have created
+  Modding:
+    - check-prototype-names.ps1 now validates every field that names another prototype rather than just recipe categories: subgroup, group, fuel, resource, equipment and ammo categories, and damage types. A subgroup is what broke this release and nothing was looking at one. Where a field is ambiguous out of context, such as category being a recipe category on a recipe and a resource category on an ore, it reports only when the name fits none of them
+    - The same script skips commented-out lines, which were being reported as if the game read them
+    - Its technology check now covers add_unlock, add_prereq, remove_prereq and the rest of the helpers, not only TECHNOLOGY(). That is what surfaced bob-rtg. Which of a technology or a recipe the name has to be depends on the receiver, so it asks only whether upstream mentions the name at all, which is enough to catch a rename
+    - check-optional-deps.ps1 follows require() and counts a guard in a parent file, since most override files are pulled in by a parent that has already tested for the mod. That removed fifteen false reports
+    - It also reads ingredient and result names, because one naming a prototype that does not exist fails validation exactly like a bad category does. Every name we use turned out to resolve, so nothing needed changing there
+---------------------------------------------------------------------------------------------------
+Version: 2.1.13
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on bob-heat-shield-tile: Angel's prefixed its recipe categories, so the smelting override has to ask for angels-sintering rather than sintering. A bad category is only caught when prototypes are validated, which is why it surfaced against a recipe rather than at the line that set it
+    - The seaweed-to-coalgas recipe we add is in angels-bio-processing for the same reason; under the old name it was rejected the moment angelsbioprocessing was active
+    - Bring the distillery exclusivity override up to Bob's 2.x, where the category is bob-distillery and the distilleries are furnaces rather than assembling machines, so it stops looking for machines that cannot match
+  Modding:
+    - check-prototype-names.ps1 gained a category check. Recipe categories are prototypes too, and nothing until now verified that one we assign exists. It reads the plural categories field, replace_category swaps, and categories pushed onto a machine after the fact
+    - It also recognises prototypes declared with type and name on a single line, which is how Angel's writes its recipe categories
+---------------------------------------------------------------------------------------------------
 Version: 2.1.12
 Date: 2026-08-11
   Bugfixes:

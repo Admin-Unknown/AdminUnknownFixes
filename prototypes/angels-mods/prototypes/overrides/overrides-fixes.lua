@@ -1,7 +1,10 @@
 -- DATA FINAL FIXES STAGE OVERRIDES
 -- Factorio 2.0: TechnologyUnit.ingredients are ResearchIngredient = { ItemID, uint16 }, not IngredientPrototype tables.
 local function set_to_py1(techname)
-    if not data.raw.technology[techname] then return end 
+    if not data.raw.technology[techname] then return end
+    -- the pack is pyalienlife's, and a technology asking for one that is not there fails
+    -- validation against the technology rather than here
+    if not data.raw.item['py-science-pack-1'] then return end
     data.raw.technology[techname].unit.ingredients = {
         {"automation-science-pack", 2},
         {"py-science-pack-1", 1}
@@ -38,7 +41,10 @@ if mods['angelssmelting'] then
     RECIPE('steel-plate'):add_unlock('steel-processing'):remove_ingredient('gas-oxygen')
 
     if mods['pyrawores'] then
-        TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
+        -- the acetylene technology belongs to pyfusionenergy, which pyrawores does not need
+        if mods['pyfusionenergy'] then
+            TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
+        end
 
         fun.global_prereq_replacer('solder-mk01', 'angels-solder-smelting-1')
 
@@ -59,6 +65,13 @@ if mods['angelssmelting'] then
 end
 
 if mods['angelspetrochem'] then
+    -- Angel's has advanced-chemistry-5 cost utility science packs, and the technology that
+    -- unlocks those packs sits downstream of nitrogen-processing-4, which in turn is asked
+    -- to wait for advanced-chemistry-5. Left alone that is a loop the game refuses to load,
+    -- and even broken it would leave the packs behind a technology that costs them. Nothing
+    -- about this depends on which py mods are installed, so neither does the fix.
+    TECHNOLOGY('angels-nitrogen-processing-4'):remove_prereq('angels-advanced-chemistry-5'):remove_pack('utility-science-pack')
+
     if mods['pyhightech'] then
         TECHNOLOGY('angels-nitrogen-processing-1'):remove_prereq('angels-basic-chemistry')
         if data.raw.technology["electronics"] then
@@ -81,7 +94,6 @@ if mods['angelspetrochem'] then
         set_to_py1('angels-resins')
         set_to_py1('angels-resin-1')
         if mods['pypetroleumhandling'] then
-            TECHNOLOGY('angels-nitrogen-processing-4'):remove_prereq('angels-advanced-chemistry-5'):remove_pack('utility-science-pack')
             TECHNOLOGY('angels-nitrogen-processing-4'):add_prereq('py-science-pack-3')
         end
     end

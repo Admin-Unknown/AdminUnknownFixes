@@ -1,4 +1,4 @@
-
+require('prototypes/compatibility/forgiving-data-extend')
 
 --angel mods
 require('prototypes/angels-mods/Data-Updates')

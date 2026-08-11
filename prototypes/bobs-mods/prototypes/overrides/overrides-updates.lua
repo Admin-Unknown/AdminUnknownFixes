@@ -320,16 +320,23 @@ end
 
 if mods['bobrevamp'] then
     if data.raw.recipe['bob-heat-shield-tile'] then
-        RECIPE('bob-heat-shield-tile'):add_ingredient({type = "item", name = "coke", amount = 5}):add_ingredient({type = "item", name = "graphite", amount = 1}):add_ingredient({type = "item", name = "saps", amount = 10}):add_ingredient({type = "item", name = "nichrome", amount = 2}):remove_ingredient('steel-plate'):remove_ingredient('plastic-bar')
+        -- graphite is pyhightech's and saps pyalienlife's; bobrevamp implies neither
+        if mods['pyhightech'] and mods['pyalienlife'] then
+            RECIPE('bob-heat-shield-tile'):add_ingredient({type = "item", name = "coke", amount = 5}):add_ingredient({type = "item", name = "graphite", amount = 1}):add_ingredient({type = "item", name = "saps", amount = 10}):add_ingredient({type = "item", name = "nichrome", amount = 2}):remove_ingredient('steel-plate'):remove_ingredient('plastic-bar')
+        end
         if mods['angelssmelting'] then
-            data.raw.recipe['bob-heat-shield-tile'].categories = {'sintering'}
+            data.raw.recipe['bob-heat-shield-tile'].categories = {'angels-sintering'}
 
             if data.raw.technology['bob-heat-shield'] then
-                TECHNOLOGY('bob-heat-shield'):remove_prereq('angels-powder-metallurgy-4'):add_prereq('angels-powder-metallurgy-1'):add_prereq('py-science-pack-3')
+                TECHNOLOGY('bob-heat-shield'):remove_prereq('angels-powder-metallurgy-4'):add_prereq('angels-powder-metallurgy-1')
 
                 OV.remove_science_pack('bob-heat-shield', 'production-science-pack')
 
-                TECHNOLOGY('bob-heat-shield'):add_pack("py-science-pack-3")
+                -- the pack and the technology named after it are both pyalienlife's, which
+                -- neither bobrevamp nor angelssmelting brings with them
+                if mods['pyalienlife'] then
+                    TECHNOLOGY('bob-heat-shield'):add_prereq('py-science-pack-3'):add_pack("py-science-pack-3")
+                end
             end
         end
     end
@@ -396,7 +403,11 @@ if mods['bobclasses'] then
         RECIPE('bob-character-miner'):add_ingredient({type = "item", name = "character", amount = 1}):add_ingredient({type = "item", name = "drill-head", amount = 5}):add_ingredient({type = "fluid", name = "drilling-fluid-1", amount = 200})
         --mk02
         TECHNOLOGY('bob-bodies-2'):remove_prereq('production-science-pack'):remove_prereq('nano-tech'):add_prereq('mass-production'):add_pack('utility-science-pack')
-        TECHNOLOGY('bob-fighter-body-2'):remove_prereq('bob-exoskeleton-equipment-2'):add_prereq('bob-energy-shield-equipment-3'):add_pack('utility-science-pack')
+        TECHNOLOGY('bob-fighter-body-2'):remove_prereq('bob-exoskeleton-equipment-2'):add_pack('utility-science-pack')
+        -- the shield technology is bobequipment's, which bobclasses does not require
+        if mods['bobequipment'] then
+            TECHNOLOGY('bob-fighter-body-2'):add_prereq('bob-energy-shield-equipment-3')
+        end
         TECHNOLOGY('bob-miner-body-2'):add_prereq('drilling-fluid-mk04'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-builder-body-2'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-engineer-body'):add_pack('utility-science-pack')
@@ -452,7 +463,10 @@ if mods['bobclasses'] then
     end
 end
 
-if mods['bobenemies'] then
+-- every recipe in there is crafted in a genlab out of pyalienlife's samples and fluids and
+-- unlocked by bobtech's alien research, so bobenemies supplying the artifacts is only part
+-- of what the file needs
+if mods['bobenemies'] and mods['pyalienlife'] and mods['bobtech'] then
     require('__AdminUnknownFixes__/prototypes/bobs-mods/prototypes/recipes/alien')
 end
 

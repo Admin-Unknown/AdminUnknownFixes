@@ -10,4 +10,4 @@ RECIPE {
     results = {
         {type = 'item', name = 'sodium-carbonate', amount = 5},
     },
-}:add_unlock('rtg')
+}:add_unlock('bob-rtg')

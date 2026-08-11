@@ -20,7 +20,11 @@ if mods['angelsrefining'] then
 end
 
 if mods['angelsbioprocessing'] then
-    TECHNOLOGY('angels-bio-processing-brown'):add_prereq('seaweed-mk01')
+    -- the seaweed technology is pyalienlife's, and a prerequisite naming a technology that
+    -- was never defined fails when the technology holding it is validated
+    if mods['pyalienlife'] then
+        TECHNOLOGY('angels-bio-processing-brown'):add_prereq('seaweed-mk01')
+    end
     if not mods['bobelectronics'] then
         RECIPE('angels-algae-farm-2'):replace_ingredient('t1-circuit', 'electronic-circuit')
     end

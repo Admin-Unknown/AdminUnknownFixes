@@ -1,3 +1,6 @@
+-- First thing of all: every mod that loads after us hands its prototypes through this.
+require('prototypes/compatibility/forgiving-data-extend')
+
 fun = require("functions/functions")
 --log(serpent.block(fun))
 

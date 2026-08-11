@@ -5,7 +5,9 @@ if mods['angelsindustries'] then
     RECIPE('distilator'):replace_ingredient('block-electronics-1', 'block-electronics-0')
     RECIPE('wpu'):remove_ingredient('cable-harness-1'):add_ingredient({type = "item", name = "cable-harness-1", amount = 10})
     RECIPE('car'):replace_ingredient('motor-2', 'motor-1')
-    RECIPE('mechanical-parts-gear'):replace_ingredient('mechanical-parts', 'small-parts-01')
+    if mods['pypetroleumhandling'] then
+        RECIPE('mechanical-parts-gear'):replace_ingredient('mechanical-parts', 'small-parts-01')
+    end
 
     TECHNOLOGY('angels-automobilism'):add_prereq('angels-components-mechanical-1')
     if mods['pyhightech'] and angelsmods.industries.components == true then
@@ -40,11 +42,14 @@ if mods['angelsindustries'] then
     OV.remove_science_pack({'angels-rocket', 'angels-rocket-fusion-reactor', 'angels-rocket-hull', 'angels-rocket-ion-thruster', 'angels-rocket-shield-array'}, 'py-science-pack-4')
     OV.remove_science_pack({'angels-rocket', 'angels-rocket-fusion-reactor', 'angels-rocket-hull', 'angels-rocket-ion-thruster', 'angels-rocket-shield-array'}, 'production-science-pack')
 
-    TECHNOLOGY('angels-rocket'):add_pack("py-science-pack-3")
-    TECHNOLOGY('angels-rocket-hull'):add_pack("py-science-pack-3")
-    TECHNOLOGY('angels-rocket-ion-thruster'):add_pack("py-science-pack-3")
-    TECHNOLOGY('angels-rocket-shield-array'):add_pack("py-science-pack-3")
-    TECHNOLOGY('angels-rocket-fusion-reactor'):add_pack("py-science-pack-3")
+    -- the pack is pyalienlife's; angelsindustries does not require it
+    if mods['pyalienlife'] then
+        TECHNOLOGY('angels-rocket'):add_pack("py-science-pack-3")
+        TECHNOLOGY('angels-rocket-hull'):add_pack("py-science-pack-3")
+        TECHNOLOGY('angels-rocket-ion-thruster'):add_pack("py-science-pack-3")
+        TECHNOLOGY('angels-rocket-shield-array'):add_pack("py-science-pack-3")
+        TECHNOLOGY('angels-rocket-fusion-reactor'):add_pack("py-science-pack-3")
+    end
 
     OV.add_prereq('rocket-silo', {'angels-rocket-fusion-reactor', 'angels-rocket-hull', 'angels-rocket-ion-thruster', 'angels-rocket-shield-array'})
     OV.remove_prereq('rocket-silo', {'low-density-stucture', 'rocket-control-unit', 'rocket-fuel'})

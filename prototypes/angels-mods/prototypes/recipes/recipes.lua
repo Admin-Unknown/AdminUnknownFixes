@@ -12,14 +12,16 @@ if mods['angelsrefining'] then
     	},
     }:add_unlock('coal-processing-1')
 end
+-- seaweed is pyalienlife's, so Angel's having the algae is not enough on its own
 if mods['angelsbioprocessing']
+    and data.raw.item['seaweed']
     and data.raw.item['angels-algae-green']
     and data.raw.item['angels-algae-brown'] then
 	RECIPE {
     	type = "recipe",
     	name = "coalgas-from-seaweed",
-    	categories = {"bio-processing"},
-    	subgroup = "bio-processing-green",
+    	categories = {"angels-bio-processing"},
+    	subgroup = "angels-bio-processing-green",
     	order = "a",
     	energy_required = 1,
     	ingredients = {

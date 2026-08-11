@@ -102,9 +102,14 @@ if mods['angelsrefining'] then
         if angelsmods.trigger.ores["lead"] then
             data.raw.resource['angels-lead-ore'] = nil
             data.raw['autoplace-control']['angels-lead-ore'] = nil
-            data.raw.resource['angels-ore5'].category = 'basic-with-fluid'
-            data.raw.resource['angels-ore5'].minable.fluid_amount = 100
-            data.raw.resource['angels-ore5'].minable.required_fluid = 'acetylene'
+            -- the category that lets an ore ask for a fluid is pyalienlife's, and pyrawores
+            -- does not bring it, so leave the ore alone rather than requiring a fluid it
+            -- has no category to support
+            if data.raw['resource-category']['basic-with-fluid'] then
+                data.raw.resource['angels-ore5'].category = 'basic-with-fluid'
+                data.raw.resource['angels-ore5'].minable.fluid_amount = 100
+                data.raw.resource['angels-ore5'].minable.required_fluid = 'acetylene'
+            end
             fun.tech_add_prerequisites('solder-mk01', 'angels-ore-crushing')
         end
         if angelsmods.trigger.ores["nickel"] then
@@ -118,9 +123,11 @@ if mods['angelsrefining'] then
             if data.raw.recipe['tin-plate-1'] then
                 data.raw.recipe['tin-plate-1'].hidden = true
             end
-            data.raw.resource['angels-ore6'].category = 'basic-with-fluid'
-            data.raw.resource['angels-ore6'].minable.fluid_amount = 100
-            data.raw.resource['angels-ore6'].minable.required_fluid = 'steam'
+            if data.raw['resource-category']['basic-with-fluid'] then
+                data.raw.resource['angels-ore6'].category = 'basic-with-fluid'
+                data.raw.resource['angels-ore6'].minable.fluid_amount = 100
+                data.raw.resource['angels-ore6'].minable.required_fluid = 'steam'
+            end
             fun.tech_add_prerequisites('solder-mk01', 'angels-ore-crushing')
         end
         if angelsmods.trigger.ores["zinc"] then
@@ -130,10 +137,13 @@ if mods['angelsrefining'] then
         end
         ::skipseablock::
 
-        RECIPE('washer'):remove_ingredient('electronic-circuit')
-        RECIPE('washer'):add_ingredient({type = "item", name = "small-parts-01", amount = 15})
-        RECIPE('angels-seafloor-pump'):remove_ingredient('electronic-circuit')
-        RECIPE('angels-seafloor-pump'):add_ingredient({type = "item", name = "small-parts-01", amount = 10})
+        -- small parts are pypetroleumhandling's, which pyrawores does not require
+        if mods['pypetroleumhandling'] then
+            RECIPE('washer'):remove_ingredient('electronic-circuit')
+            RECIPE('washer'):add_ingredient({type = "item", name = "small-parts-01", amount = 15})
+            RECIPE('angels-seafloor-pump'):remove_ingredient('electronic-circuit')
+            RECIPE('angels-seafloor-pump'):add_ingredient({type = "item", name = "small-parts-01", amount = 10})
+        end
     end
     if mods['pyhightech'] then
         if data.raw.technology["electronics"] and data.raw.technology["angels-water-treatment"] then
@@ -147,7 +157,10 @@ if mods['angelsrefining'] then
         data.raw.recipe['angels-stone-crushed'].enabled = false
         data.raw.recipe['angels-stone-crushed'].hidden = true
 
-        RECIPE('hpf-stone-from-crush'):add_ingredient({type = "fluid", name = "carbolic-oil", amount = 10})
+        -- carbolic oil is pypetroleumhandling's
+        if mods['pypetroleumhandling'] then
+            RECIPE('hpf-stone-from-crush'):add_ingredient({type = "fluid", name = "carbolic-oil", amount = 10})
+        end
 
         data.raw.resource['angels-ore3'].minable.fluid_amount = 200
         data.raw.resource['angels-ore3'].minable.required_fluid = 'water'
@@ -178,7 +191,10 @@ if mods['angelspetrochem'] then
         data.raw.recipe['rocket-fuel'].ingredients = {}
         --RECIPE('rocket-fuel'):remove_ingredient('gas-oxygen'):remove_ingredient('kerosene')
         RECIPE('rocket-fuel'):add_ingredient({type = "item", name = "angels-rocket-fuel-capsule", amount = 10}):add_ingredient({type = "item", name = "angels-rocket-oxidizer-capsule", amount = 10})
-        RECIPE('angels-rocket-fuel-capsule'):add_ingredient({type = "fluid", name = "kerosene", amount = 50})
+        -- kerosene comes from pyrawores rather than from petroleum handling
+        if mods['pyrawores'] then
+            RECIPE('angels-rocket-fuel-capsule'):add_ingredient({type = "fluid", name = "kerosene", amount = 50})
+        end
         RECIPE('angels-rocket-oxidizer-capsule'):add_ingredient({type = "fluid", name = "gas-oxygen", amount = 75})
     end
     if mods['pyrawores'] then
@@ -187,7 +203,9 @@ if mods['angelspetrochem'] then
     end
     if mods['pyfusionenergy'] then
         fun.tech_remove_recipe('fluid-pressurization', 'pressured-air')
-        RECIPE('angels-air-filter'):replace_ingredient('basic-circuit-board', 'small-parts-01')
+        if mods['pypetroleumhandling'] then
+            RECIPE('angels-air-filter'):replace_ingredient('basic-circuit-board', 'small-parts-01')
+        end
         if mods['pyhightech'] then
             if data.raw.technology["angels-water-treatment"] then
                 TECHNOLOGY("angels-water-treatment"):remove_prereq("angels-fluid-control")
@@ -271,7 +289,10 @@ if mods['angelspetrochem'] then
 
             TECHNOLOGY('angels-water-treatment-2'):add_prereq('filtration')
 
-            data.raw['assembling-machine']['angels-clarifier'].crafting_speed = 5
+            -- only present if the loop above found a clarifier furnace to convert
+            if data.raw['assembling-machine']['angels-clarifier'] then
+                data.raw['assembling-machine']['angels-clarifier'].crafting_speed = 5
+            end
         end
     end
 end
@@ -285,7 +306,9 @@ if mods['angelssmelting'] then
     if mods['pyrawores'] then
         RECIPE('angels-solder-mixture'):remove_ingredient('angels-plate-lead'):add_ingredient({type = "item", name = "angels-plate-lead", amount = 4})
 
-        TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
+        if mods['pyfusionenergy'] then
+            TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
+        end
 
         fun.tech_remove_recipe('solder-mk01', 'solder-0')
         fun.tech_remove_recipe('solder-mk01', 'lead-plate-1')

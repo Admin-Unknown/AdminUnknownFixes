@@ -7,6 +7,8 @@ if _G.__auf_saved_global_error then
     error = e
 end
 
+require('prototypes/compatibility/forgiving-data-extend')
+
 -- Runs after pycoalprocessing's data-final-fixes (hard dependency). Whatever this
 -- logs as rebound is a prototype some earlier final-fixes stripped the
 -- pypostprocessing metatable from, which is what the stamps in data-updates cover.
@@ -104,6 +106,12 @@ end
 
 -- After all other final-fixes: ensure bob-lab-2 accepts every pack used by Bob gold + alien bullet-line techs.
 require("prototypes/compatibility/fix-bob-lab2-research-inputs")
+
+-- Last pass over the upgrade chains, once every mod has finished resizing things.
+require("prototypes/compatibility/fix-mismatched-next-upgrade")
+
+-- Same idea for the technology tree, once every mod has finished rearranging it.
+require("prototypes/compatibility/break-technology-cycles")
 
 -- Last thing we do: the helper stamps from data-updates have served their purpose
 -- and Factorio cannot serialise a function field ("Cannot serialise ttype=function").

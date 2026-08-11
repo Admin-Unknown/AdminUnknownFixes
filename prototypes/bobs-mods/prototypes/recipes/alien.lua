@@ -31,33 +31,39 @@ RECIPE {
 }:add_unlock('bob-alien-research')
 
 --Great
-RECIPE {
-    type = "recipe",
-    name = "alien-from-great",
-    categories = {"genlab"},
-    energy_required = 25,
-    ingredients = {
-        {type = 'item', name = 'alien-sample-03', amount = 1},
-        {type = 'fluid', name = 'fatty-acids', amount = 100},
-        {type = 'fluid', name = 'fetal-serum', amount = 100},
-    },
-    results = {
-        {type = 'item', name = 'bob-alien-artifact', amount = 100},
-    },
-}:add_unlock('bob-alien-research')
+-- fatty acids are pyalternativeenergy's, which pyalienlife does not bring with it
+if mods['pyalternativeenergy'] then
+    RECIPE {
+        type = "recipe",
+        name = "alien-from-great",
+        categories = {"genlab"},
+        energy_required = 25,
+        ingredients = {
+            {type = 'item', name = 'alien-sample-03', amount = 1},
+            {type = 'fluid', name = 'fatty-acids', amount = 100},
+            {type = 'fluid', name = 'fetal-serum', amount = 100},
+        },
+        results = {
+            {type = 'item', name = 'bob-alien-artifact', amount = 100},
+        },
+    }:add_unlock('bob-alien-research')
+end
 
 --Perfect
-RECIPE {
-    type = "recipe",
-    name = "alien-from-perfect",
-    categories = {"genlab"},
-    energy_required = 30,
-    ingredients = {
-        {type = 'item', name = 'perfect-samples', amount = 1},
-        {type = 'item', name = 'super-alloy', amount = 10},
-        {type = 'fluid', name = 'psc', amount = 100},
-    },
-    results = {
-        {type = 'item', name = 'bob-alien-artifact', amount = 500},
-    },
-}:add_unlock('bob-alien-research')
+-- and super alloy is pyfusionenergy's
+if mods['pyfusionenergy'] then
+    RECIPE {
+        type = "recipe",
+        name = "alien-from-perfect",
+        categories = {"genlab"},
+        energy_required = 30,
+        ingredients = {
+            {type = 'item', name = 'perfect-samples', amount = 1},
+            {type = 'item', name = 'super-alloy', amount = 10},
+            {type = 'fluid', name = 'psc', amount = 100},
+        },
+        results = {
+            {type = 'item', name = 'bob-alien-artifact', amount = 500},
+        },
+    }:add_unlock('bob-alien-research')
+end

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Build Factorio release zips for AdminUnknownFixes (repo root) and PyCoalTBaA (PyCoalTBaA-stub/).
-# Also copies the PyCoalTBaA stub zip into repo stubs/ for direct-download artifacts.
+# Build Factorio release zips for AdminUnknownFixes (repo root) and its companion mods,
+# each of which lives in a folder of its own and is copied whole.
+# Also copies the companion zips into repo stubs/ for direct-download artifacts.
 # Usage (from repo root): ./scripts/package-mods.sh
 # Optional: OUT_DIR=build ./scripts/package-mods.sh   CLEAN=1 ./scripts/package-mods.sh
 
@@ -10,6 +11,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUT_DIR="${OUT_DIR:-dist}"
 DIST="$ROOT/$OUT_DIR"
+
+COMPANION_FOLDERS=(PyCoalTBaA-stub extend-guard-stub)
 
 json_field() {
   local file="$1" field="$2"
@@ -21,16 +24,6 @@ json_field() {
     echo "Need python3 or jq to read $file" >&2
     exit 1
   fi
-}
-
-read_main() {
-  MAIN_NAME="$(json_field "$ROOT/info.json" name)"
-  MAIN_VER="$(json_field "$ROOT/info.json" version)"
-}
-
-read_pycoal_stub() {
-  PYCOAL_NAME="$(json_field "$ROOT/PyCoalTBaA-stub/info.json" name)"
-  PYCOAL_VER="$(json_field "$ROOT/PyCoalTBaA-stub/info.json" version)"
 }
 
 stage_main() {
@@ -50,11 +43,11 @@ stage_main() {
   done
 }
 
-stage_pycoal_stub() {
-  local inner="$1"
+stage_companion() {
+  local folder="$1" inner="$2"
   mkdir -p "$inner"
   shopt -s dotglob nullglob
-  for p in "$ROOT/PyCoalTBaA-stub"/*; do
+  for p in "$ROOT/$folder"/*; do
     cp -R "$p" "$inner/"
   done
   shopt -u dotglob nullglob
@@ -65,11 +58,9 @@ zip_one() {
   ( cd "$parent" && zip -qr "$zip_path" "$folder_name" )
 }
 
-read_main
-read_pycoal_stub
-
+MAIN_NAME="$(json_field "$ROOT/info.json" name)"
+MAIN_VER="$(json_field "$ROOT/info.json" version)"
 MAIN_INNER="${MAIN_NAME}_${MAIN_VER}"
-PYCOAL_INNER="${PYCOAL_NAME}_${PYCOAL_VER}"
 
 STAGING="$(mktemp -d "${TMPDIR:-/tmp}/auf-pack.XXXXXX")"
 cleanup() { rm -rf "$STAGING"; }
@@ -81,21 +72,27 @@ fi
 mkdir -p "$DIST"
 
 stage_main "$STAGING/$MAIN_INNER"
-stage_pycoal_stub "$STAGING/$PYCOAL_INNER"
-
 MAIN_ZIP="$DIST/${MAIN_NAME}_${MAIN_VER}.zip"
-PYCOAL_ZIP="$DIST/${PYCOAL_NAME}_${PYCOAL_VER}.zip"
-rm -f "$MAIN_ZIP" "$PYCOAL_ZIP"
-
+rm -f "$MAIN_ZIP"
 zip_one "$STAGING" "$MAIN_INNER" "$MAIN_ZIP"
-zip_one "$STAGING" "$PYCOAL_INNER" "$PYCOAL_ZIP"
 
 echo "Wrote:"
 echo "  $MAIN_ZIP"
-echo "  $PYCOAL_ZIP"
 
 STUBS="$ROOT/stubs"
 mkdir -p "$STUBS"
-cp -f "$PYCOAL_ZIP" "$STUBS/"
-echo "Copied stub zip to:"
-echo "  $STUBS/$(basename "$PYCOAL_ZIP")"
+
+for folder in "${COMPANION_FOLDERS[@]}"; do
+  name="$(json_field "$ROOT/$folder/info.json" name)"
+  version="$(json_field "$ROOT/$folder/info.json" version)"
+  inner="${name}_${version}"
+  stage_companion "$folder" "$STAGING/$inner"
+  zip_path="$DIST/${inner}.zip"
+  rm -f "$zip_path"
+  zip_one "$STAGING" "$inner" "$zip_path"
+  echo "  $zip_path"
+  cp -f "$zip_path" "$STUBS/"
+done
+
+echo "Copied companion zips to:"
+echo "  $STUBS"
