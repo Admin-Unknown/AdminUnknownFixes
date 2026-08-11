@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.21
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on sand-processing. Factorio 2.1 changed the mine-entity research trigger: where it named one entity it now takes a list of them, any one of which finishes the research. bobplates still writes the old form, and the Angel's fix in here rewrites which entity it names without changing the shape, so we hand it on just as broken
+    - Every mine-entity trigger is now brought to the new shape at the end of the load rather than that one being named. This is the same kind of change as recipe categories becoming a list, and it reports the same way, against the technology rather than the line that wrote it
+    - The trigger's entities are also checked against what is installed, and a name nothing provides is dropped so long as something is left to mine. If nothing is, that is written to the log and left alone, since which entity should take its place is a decision rather than a guess. The sand-processing case has such a decision already: Angel's Refining removes bob-quartz, and the fix beside it names Angel's quartz instead, or falls back to crafting sand
+    - That fallback was counting with the wrong word. A craft-item trigger reads count and nothing reads amount, so it was being ignored and the default of one used. The intent was one, so nothing changes in play
+    - Checked every research trigger the upstream sources write while here. Only bobplates uses mine-entity; the rest are craft-item and unaffected
+---------------------------------------------------------------------------------------------------
 Version: 2.1.20
 Date: 2026-08-11
   Bugfixes:

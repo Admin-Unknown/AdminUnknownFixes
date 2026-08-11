@@ -30,6 +30,10 @@ local function replace_bob_quartz_in_research_trigger(node, replacement)
             replace_bob_quartz_in_research_trigger(v, replacement)
         elseif (k == "entity" or k == "resource" or k == "default_entity") and v == BOB_QUARTZ then
             node[k] = replacement
+        elseif type(k) == "number" and v == BOB_QUARTZ then
+            -- 2.1 mine-entity triggers hold their entities in a list, so the name we are
+            -- after can be a numbered entry rather than a named field
+            node[k] = replacement
         end
     end
 end
@@ -41,7 +45,8 @@ if mods["angelsrefining"] and not prototype_exists_for_mine_trigger(BOB_QUARTZ) 
         if rep then
             replace_bob_quartz_in_research_trigger(tech.research_trigger, rep)
         elseif data.raw.item["sand"] then
-            tech.research_trigger = { type = "craft-item", item = "sand", amount = 1 }
+            -- a craft-item trigger counts with "count"; "amount" is simply not read
+            tech.research_trigger = { type = "craft-item", item = "sand", count = 1 }
         end
     end
 end

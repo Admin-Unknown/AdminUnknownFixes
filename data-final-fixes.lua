@@ -111,6 +111,7 @@ require("prototypes/compatibility/fix-bob-lab2-research-inputs")
 require("prototypes/compatibility/fix-mismatched-next-upgrade")
 
 -- Same idea for the technology tree, once every mod has finished rearranging it.
+require("prototypes/compatibility/fix-mine-entity-triggers")
 require("prototypes/compatibility/break-technology-cycles")
 
 -- Last thing we do: the helper stamps from data-updates have served their purpose
