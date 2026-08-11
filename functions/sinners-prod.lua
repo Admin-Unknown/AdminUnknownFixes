@@ -6,7 +6,7 @@ data.raw.module['moss-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['sap-tree-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['ulric-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['sea-sponge-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['ralesias-mk03'].effect.productivity = {bonus = 0.01}
+data.raw.module['ralesia-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['mukmoux-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['arthurian-mk03'].effect.productivity = {bonus = 0.01}
 data.raw.module['tuuphra-mk03'].effect.productivity = {bonus = 0.01}
@@ -48,7 +48,7 @@ data.raw.module['moss-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['sap-tree-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['ulric-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['sea-sponge-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['ralesias-mk04'].effect.productivity = {bonus = 0.02}
+data.raw.module['ralesia-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['mukmoux-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['arthurian-mk04'].effect.productivity = {bonus = 0.02}
 data.raw.module['tuuphra-mk04'].effect.productivity = {bonus = 0.02}

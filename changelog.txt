@@ -1,4 +1,95 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.11
+Date: 2026-08-10
+  Bugfixes:
+    - Sweep every prototype name we reference against the mods in othermodsource and repoint the ones renamed upstream, instead of finding them one crash at a time
+    - Fix two more load crashes: angels-rocket-fuel-capsule / angels-rocket-oxidizer-capsule were injected into the rocket-fuel recipe under their old unprefixed names, and angels-crystal-grindstone into eg-si, so prototype validation rejected an unknown ingredient
+    - Bob's 3.0 prefixes we had missed: the whole bobclasses player-* body part line, exoskeleton-equipment-2, steel-bearing-ball, electrolysis-1, silicon-nitride, synthetic-wood, sour-gas, ammoniated-brine, ferric-chloride-solution, chemical-plant-2/3/4, gold/silver/rutile ore, and bob-nickel-processing (previously misspelt "nickel-procesing")
+    - Angel's 2.1 prefixes we had missed: powder-metallurgy-1/4, algae-farm and algae-farm-2, water-washing-1, puffer-butchery-1, crystal-grindstone, algae-green and algae-brown, so the seaweed-to-coalgas recipe is registered again
+    - Angel's names that were reordered rather than just prefixed: cellulose is angels-cellulose-fiber, black liquor is angels-liquid-black-liquor, residual gas is angels-gas-residual, the petri dish is angels-petri-dish, and pressured air is angels-gas-compressed-air, so those merges into the Py equivalents happen again
+    - Names that are Py's, not Angel's, and should never have carried an angels- prefix: melamine, melamine-resin, filtration, empty-planter-box, lead-plate-1
+    - Angel's-ore-to-Py-ore merges pointed at item names Py does not use; they are ore-aluminium, ore-chromium, ore-lead, ore-nickel, ore-tin and ore-zinc
+    - Bob's aluminium resource is bob-bauxite-ore and yields Py's ore-aluminium
+    - Bob's advanced logistic science pack is bob-advanced-logistic-science-pack, so removing it from Angel's silo and warehouse technologies works
+    - Fix the ralesia productivity modules (were "ralesias-mk03"/"-mk04"), which would have crashed data.lua for anyone with the prod-for-sinners setting on
+    - Merge the first-tier centrifuge into centrifuge-mk01. Bob's only prefixes tier 2 and up, so tier 1 is the vanilla centrifuge and was never matched, while the mk02 and mk03 merges on the next lines already worked
+    - Hide Py's tin-plate-1 when Angel's tin ore is enabled, which is what the block guarded by that setting always meant to do
+  Changes:
+    - Drop the auto_barrel workaround for xyhiphoe blood; PyAL renamed it to blood-xyhiphoe and turned it into an item, so there is no fluid left to fix
+  Modding:
+    - Add scripts/suggest-renames.ps1, which proposes what an unknown name was renamed to and names the mod and prototype type that defines each candidate
+    - Add scripts/check-lua-strings.py, a structural check that a bulk edit over quoted names left every string and bracket balanced
+---------------------------------------------------------------------------------------------------
+Version: 2.1.10
+Date: 2026-08-10
+  Bugfixes:
+    - Fix load crash on bob-turbo-underground-belt: Bob's 2.1 dropped the bob- prefix from the turbo belt tier, so turbo-underground-belt / turbo-transport-belt are the names now (ultimate keeps its prefix)
+    - Fix load crash on unknown technologies: logistics-0 and energy-3 (not bob-logistics-0 / bob-energy-3), angels-solder-smelting-1 (not -basic), and the bob- prefixes the 2.1 pass missed in the no-angels overrides (advanced-research, electric-substation-2, exoskeleton-equipment-2, fluid-generator-2, invar-processing, lead-processing, personal-roboport-modular-equipment-1, vehicle-laser-defense-equipment-2, vehicle-roboport-modular-equipment-1, vehicle-shield-equipment-1)
+    - Stop injecting the non-existent bob-robot-brain-construction item into py-construction-robot-mk01; Bob's item is bob-robot-brain
+    - Angel's resin technology is angels-resin-1, so the prereq and science-pack overrides for it apply again instead of being skipped
+  Modding:
+    - Add scripts/check-prototype-names.ps1, which reports prototype names we reference that no longer exist in othermodsource, so renames turn up in one pass instead of one crash at a time
+---------------------------------------------------------------------------------------------------
+Version: 2.1.9
+Date: 2026-08-10
+  Bugfixes:
+    - PyCoalTBaA stub 0.0.7 now stamps recipe:has_category itself in data-updates and no longer depends on AdminUnknownFixes being present or loading first; every mod's data-updates runs before every mod's data-final-fixes, so this lands ahead of pycoalprocessing's checks whatever the mod order turns out to be
+    - Stamp has_category as a callable table instead of a function, so it survives serialisation on its own ("Cannot serialise ttype=function") rather than depending on a later cleanup pass
+    - Both mods log recipe counts under [AdminUnknownFixes] and [PyCoalTBaA stub] so factorio-current.log shows which stages actually ran
+---------------------------------------------------------------------------------------------------
+Version: 2.1.8
+Date: 2026-08-10
+  Bugfixes:
+    - Fix pycoalprocessing data-final-fixes crash (recipe:has_category nil) by stamping the helper onto every recipe as a plain field at the end of data-updates, which survives any mod that replaces a prototype's metatable in an earlier data-final-fixes; the stamps are removed again at the end of our own data-final-fixes so Factorio can still serialise the prototypes
+    - Recipes added after that point pick the helpers up through a data.raw.recipe __newindex hook, so data:extend during final-fixes is covered too
+    - Log which prototypes lost their pypostprocessing metatable and which mod stage restored them, so the culprit is named in factorio-current.log
+---------------------------------------------------------------------------------------------------
+Version: 2.1.7
+Date: 2026-08-10
+  Bugfixes:
+    - Fix pycoalprocessing data-final-fixes crash (recipe:has_category nil) without depending on load order: data.raw.recipe now carries a __pairs hook that rebinds pypostprocessing's recipe helpers inside the caller's own loop, so any prototype that lost its metatable is healed before pycoalprocessing reads it
+    - Recipe helpers fall back to a self-contained has_category when pypostprocessing's table cannot be found, and forward every other method to pypostprocessing, so the heal can no longer silently do nothing
+    - Drop the global pairs() override, which bypassed __pairs metamethods for every mod loaded after us
+    - PyCoalTBaA stub 0.0.6: share the same guard instead of its own rebind, and never abort the load
+---------------------------------------------------------------------------------------------------
+Version: 2.1.6
+Date: 2026-08-10
+  Bugfixes:
+    - PyCoalTBaA stub 0.0.5: drop graphics peer-dep (case-insensitive sort put stub after pycoal so heal never ran); rebind all recipes via RECIPE() in an earlier DFF wave; fail loudly if has_category still missing
+---------------------------------------------------------------------------------------------------
+Version: 2.1.5
+Date: 2026-08-10
+  Bugfixes:
+    - PyCoalTBaA stub 0.0.4: rebind every recipe via RECIPE() in DFF; depend on pycoalprocessinggraphics so heal runs in pycoal's load cohort (not too early); hard-error if any recipe still lacks has_category
+---------------------------------------------------------------------------------------------------
+Version: 2.1.4
+Date: 2026-08-10
+  Bugfixes:
+    - PyCoalTBaA stub 0.0.3: restore has_category via setmetatable only (own-field functions are not serialisable); depend on pypostprocessing; strip illegal function fields from older AUF heals
+---------------------------------------------------------------------------------------------------
+Version: 2.1.3
+Date: 2026-08-10
+  Bugfixes:
+    - Move recipe has_category heal into PyCoalTBaA stub 0.0.2 data-final-fixes (loads before pycoal); AUF alone is always too late when optional Py deps are enabled
+---------------------------------------------------------------------------------------------------
+Version: 2.1.2
+Date: 2026-08-10
+  Bugfixes:
+    - Fix pycoalprocessing has_category nil for real: require PyPP lib, stamp own-field has_category on every recipe, re-heal at end of data-updates (pairs wrap cannot reach other mods' sandboxes)
+---------------------------------------------------------------------------------------------------
+Version: 2.1.1
+Date: 2026-08-10
+  Bugfixes:
+    - Fix pycoalprocessing data-final-fixes crash (recipe:has_category nil): cache PyPP recipe metatables early and re-heal on pairs(data.raw.recipe) so stripped metas are restored before Py's tar/combustion checks
+---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: 2026-08-10
+  Changes:
+    - Factorio 2.1: factorio_version 2.1, base/Py/Angels/Bob dependency floors, recipe category → categories API, omni-science-pack as item
+    - Require pypostprocessing >= 3.1.2; remove pyppatba stub, packaging, and install docs (no longer needed)
+    - Bump PyCoalTBaA stub to factorio_version 2.1 (still required for Angels + Py gate)
+    - Remove obsolete 2.0-era overrides; fix Bob bob- prefixes, electronics prereq, washer angels-washing-plant merge, urea fluid/unlock names
+---------------------------------------------------------------------------------------------------
 Version: 2.0.48
 Date: 2026-04-23
   Changes:

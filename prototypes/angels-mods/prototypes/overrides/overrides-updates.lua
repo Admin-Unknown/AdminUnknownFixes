@@ -23,14 +23,14 @@ if mods['angelsrefining'] then
         end
     end
     --merge angel's washers to py's
-    add_crafting_category("assembling-machine", "washer", "angels-washer")
-    data.raw.recipe['angels-washing-washer'] = nil
-    fun.remove_recipe_unlock('angels-washer')
+    add_crafting_category("assembling-machine", "washer", "angels-washing-plant")
+    data.raw.recipe['angels-washing-plant'] = nil
+    fun.remove_recipe_unlock('angels-washing-plant')
     --merge angels filters to py
     add_crafting_category("assembling-machine", "carbon-filter", "angels-filtering")
     data.raw.recipe['angels-filtration-unit'] = nil
     fun.remove_recipe_unlock('angels-filtration-unit')
-    if mods['pyalienlife'] then TECHNOLOGY('soil-washing'):add_prereq('water-washing-1') end
+    if mods['pyalienlife'] then TECHNOLOGY('soil-washing'):add_prereq('angels-water-washing-1') end
     -- change barreling machine
     if mods['pyindustry'] then
         data.raw.recipe['angels-barreling-pump'] = nil
@@ -55,18 +55,18 @@ if mods['angelsrefining'] then
         add_crafting_category("assembling-machine", "carbon-filter-mk04", "angels-filtering-3")
         --merge angel's washers to py's
         --mk02
-        add_crafting_category("assembling-machine", "washer-mk02", "angels-washer")
-        data.raw.recipe['angels-washer-mk02'] = nil
-        fun.remove_recipe_unlock('angels-washer-mk02')
+        add_crafting_category("assembling-machine", "washer-mk02", "angels-washing-plant")
+        data.raw.recipe['angels-washing-plant-2'] = nil
+        fun.remove_recipe_unlock('angels-washing-plant-2')
         if mods['ExtendedAngels'] then
             --mk03
-            add_crafting_category("assembling-machine", "washer-mk03", "angels-washer")
-            data.raw.recipe['angels-washer-mk03'] = nil
-            fun.remove_recipe_unlock('angels-washer-mk03')
+            add_crafting_category("assembling-machine", "washer-mk03", "angels-washing-plant")
+            data.raw.recipe['angels-washing-plant-3'] = nil
+            fun.remove_recipe_unlock('angels-washing-plant-3')
             --mk04
-            add_crafting_category("assembling-machine", "washer-mk04", "angels-washer")
-            data.raw.recipe['angels-washer-mk04'] = nil
-            fun.remove_recipe_unlock('angels-washer-mk04')
+            add_crafting_category("assembling-machine", "washer-mk04", "angels-washing-plant")
+            data.raw.recipe['angels-washing-plant-4'] = nil
+            fun.remove_recipe_unlock('angels-washing-plant-4')
         end
         -- merge angels flotation cell into pys cell
         -- mk01
@@ -115,11 +115,8 @@ if mods['angelsrefining'] then
         if angelsmods.trigger.ores["tin"] then
             data.raw.resource['angels-tin-ore'] = nil
             data.raw['autoplace-control']['angels-tin-ore'] = nil
-            if data.raw.recipe['angels-tin-plate-1'] then
-                data.raw.recipe['angels-tin-plate-1'].hidden = true
-                if data.raw.technology["angels-mining-with-fluid"] then
-                    fun.tech_remove_recipe("angels-mining-with-fluid", "angels-tin-plate-1")
-                end
+            if data.raw.recipe['tin-plate-1'] then
+                data.raw.recipe['tin-plate-1'].hidden = true
             end
             data.raw.resource['angels-ore6'].category = 'basic-with-fluid'
             data.raw.resource['angels-ore6'].minable.fluid_amount = 100
@@ -139,12 +136,12 @@ if mods['angelsrefining'] then
         RECIPE('angels-seafloor-pump'):add_ingredient({type = "item", name = "small-parts-01", amount = 10})
     end
     if mods['pyhightech'] then
-        if data.raw.technology["vacuum-tube-electronics"] and data.raw.technology["angels-water-treatment"] then
-            TECHNOLOGY("angels-water-treatment"):add_prereq("vacuum-tube-electronics")
+        if data.raw.technology["electronics"] and data.raw.technology["angels-water-treatment"] then
+            TECHNOLOGY("angels-water-treatment"):add_prereq("electronics")
         end
     end
     if mods['pyalienlife'] then
-        RECIPE('angels-empty-planter-box'):remove_ingredient('stone-brick'):add_ingredient({type = "item", name = "stone-brick", amount = 2})
+        RECIPE('empty-planter-box'):remove_ingredient('stone-brick'):add_ingredient({type = "item", name = "stone-brick", amount = 2})
     end
     if mods['pyhardmode'] then
         data.raw.recipe['angels-stone-crushed'].enabled = false
@@ -163,17 +160,26 @@ end
 if mods['angelspetrochem'] then
     if mods['pyindustry'] then
         for name, recipe in pairs(data.raw.recipe) do
-            if recipe.category == 'angels-chemical-void' then
-                recipe.category = 'py-venting'
+            local is_chem_void = false
+            if recipe.categories then
+                for _, c in pairs(recipe.categories) do
+                    if c == 'angels-chemical-void' then is_chem_void = true break end
+                end
+            elseif recipe.category == 'angels-chemical-void' then
+                is_chem_void = true
+            end
+            if is_chem_void then
+                recipe.categories = {'py-venting'}
+                recipe.category = nil
             end
         end
     end
     if mods['pypetroleumhandling'] then
         data.raw.recipe['rocket-fuel'].ingredients = {}
         --RECIPE('rocket-fuel'):remove_ingredient('gas-oxygen'):remove_ingredient('kerosene')
-        RECIPE('rocket-fuel'):add_ingredient({type = "item", name = "rocket-fuel-capsule", amount = 10}):add_ingredient({type = "item", name = "rocket-oxidizer-capsule", amount = 10})
-        RECIPE('rocket-fuel-capsule'):add_ingredient({type = "fluid", name = "kerosene", amount = 50})
-        RECIPE('rocket-oxidizer-capsule'):add_ingredient({type = "fluid", name = "gas-oxygen", amount = 75})
+        RECIPE('rocket-fuel'):add_ingredient({type = "item", name = "angels-rocket-fuel-capsule", amount = 10}):add_ingredient({type = "item", name = "angels-rocket-oxidizer-capsule", amount = 10})
+        RECIPE('angels-rocket-fuel-capsule'):add_ingredient({type = "fluid", name = "kerosene", amount = 50})
+        RECIPE('angels-rocket-oxidizer-capsule'):add_ingredient({type = "fluid", name = "gas-oxygen", amount = 75})
     end
     if mods['pyrawores'] then
         data.raw.recipe['angels-air-separation'] = nil
@@ -186,22 +192,22 @@ if mods['angelspetrochem'] then
             if data.raw.technology["angels-water-treatment"] then
                 TECHNOLOGY("angels-water-treatment"):remove_prereq("angels-fluid-control")
             end
-            if data.raw.technology["vacuum-tube-electronics"] then
-                TECHNOLOGY("vacuum-tube-electronics"):add_prereq("angels-nitrogen-processing-1")
+            if data.raw.technology["electronics"] then
+                TECHNOLOGY("electronics"):add_prereq("angels-nitrogen-processing-1")
                 if not mods["SeaBlock"] and data.raw.technology["angels-basic-chemistry"] then
-                    TECHNOLOGY("angels-basic-chemistry"):add_prereq("vacuum-tube-electronics")
+                    TECHNOLOGY("angels-basic-chemistry"):add_prereq("electronics")
                 end
             end
         end
     end
     if mods['pyhightech'] then
-        if data.raw.technology["angels-melamine"] then
-            TECHNOLOGY("angels-melamine"):add_prereq("angels-resins")
+        if data.raw.technology["melamine"] then
+            TECHNOLOGY("melamine"):add_prereq("angels-resins")
         end
-        if data.raw.recipe["angels-melamine-resin"] then
-            RECIPE("angels-melamine-resin"):add_ingredient({ type = "fluid", name = "saps", amount = 10 })
+        if data.raw.recipe["melamine-resin"] then
+            RECIPE("melamine-resin"):add_ingredient({ type = "fluid", name = "saps", amount = 10 })
         end
-        if data.raw.fluid["gas-urea"] and data.raw.item["urea"] then
+        if data.raw.fluid["angels-gas-urea"] and data.raw.item["urea"] then
             require('__AdminUnknownFixes__/prototypes/angels-mods/prototypes/recipes/urea')
         end
     end
@@ -209,11 +215,11 @@ if mods['angelspetrochem'] then
         if data.raw.technology['angels-basic-chemistry-3'] then
             TECHNOLOGY('angels-basic-chemistry-3'):add_prereq('py-science-pack-mk01')
         end
-        if data.raw.technology['resin-1'] then
-            TECHNOLOGY('resin-1'):remove_prereq('angels-nitrogen-processing-2')
+        if data.raw.technology['angels-resin-1'] then
+            TECHNOLOGY('angels-resin-1'):remove_prereq('angels-nitrogen-processing-2')
         end
-        if data.raw.technology['angels-melamine'] then
-            TECHNOLOGY('angels-melamine'):add_prereq('angels-resins')
+        if data.raw.technology['melamine'] then
+            TECHNOLOGY('melamine'):add_prereq('angels-resins')
         end
 
         RECIPE('angels-solid-resin'):set_fields{ results = {{type = "item", name = "saps", amount = 40}} }
@@ -234,7 +240,15 @@ if mods['angelspetrochem'] then
         end
 
         for name, recipe in pairs(data.raw.recipe) do
-            if recipe.category == 'angels-water-void' then
+            local is_water_void = false
+            if recipe.categories then
+                for _, c in pairs(recipe.categories) do
+                    if c == 'angels-water-void' then is_water_void = true break end
+                end
+            elseif recipe.category == 'angels-water-void' then
+                is_water_void = true
+            end
+            if is_water_void then
                 if recipe ~= data.raw.recipe['angels-water-void-water-saline'] then
                     if recipe ~= data.raw.recipe['angels-water-void-water-purified'] then
                         data.raw.recipe[name] = nil
@@ -249,7 +263,7 @@ if mods['angelspetrochem'] then
         RECIPE('angels-water-void-water-saline'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
         RECIPE('angels-water-void-water-purified'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
 
-        TECHNOLOGY('angels-water-treatment-2'):add_prereq('angels-filtration')
+        TECHNOLOGY('angels-water-treatment-2'):add_prereq('filtration')
 
         data.raw['assembling-machine']['angels-clarifier'].crafting_speed = 5
     end
@@ -258,18 +272,18 @@ end
 if mods['angelssmelting'] then
     TECHNOLOGY('angels-metallurgy-2'):add_prereq('logistic-science-pack')
     if mods['pyfusionenergy'] then
-        RECIPE('angels-mono-silicon-1'):set_fields{ category = "hpf" }
-        RECIPE('angels-mono-silicon-2'):set_fields{ category = "hpf" }
+        RECIPE('angels-mono-silicon-1'):set_fields{ categories = {"hpf"} }
+        RECIPE('angels-mono-silicon-2'):set_fields{ categories = {"hpf"} }
     end
     if mods['pyrawores'] then
         RECIPE('angels-solder-mixture'):remove_ingredient('angels-plate-lead'):add_ingredient({type = "item", name = "angels-plate-lead", amount = 4})
 
-        TECHNOLOGY('angels-solder-smelting-basic'):add_prereq('acetylene')
+        TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
 
         fun.tech_remove_recipe('solder-mk01', 'solder-0')
-        fun.tech_remove_recipe('solder-mk01', 'angels-lead-plate-1')
+        fun.tech_remove_recipe('solder-mk01', 'lead-plate-1')
 
-        fun.tech_add_recipe('angels-solder-smelting-basic', 'angels-lead-plate-1')
+        fun.tech_add_recipe('angels-solder-smelting-1', 'lead-plate-1')
 
         data.raw.recipe['solder-0'] = nil
 
@@ -288,7 +302,6 @@ if mods['angelssmelting'] then
 
         TECHNOLOGY('angels-stone-smelting-1'):add_pack('py-science-pack-1')
         TECHNOLOGY('angels-powder-metallurgy-1'):add_pack('py-science-pack-1')
-        TECHNOLOGY('angels-sulfur-processing-1'):add_pack('py-science-pack-1')
     end
     if mods['pyalternativeenergy'] then
         fun.tech_remove_recipe('silicon-mk01', 'silicon')
@@ -302,18 +315,25 @@ end
 
 if mods['angelsindustries'] then
     if mods['pyalternativeenergy'] then
-        table.insert(data.raw['assembling-machine']['centrifuge-mk02'].crafting_categories, 'centrifuging-2')
-        table.insert(data.raw['assembling-machine']['centrifuge-mk03'].crafting_categories, 'centrifuging-2')
-        table.insert(data.raw['assembling-machine']['centrifuge-mk03'].crafting_categories, 'centrifuging-3')
-        table.insert(data.raw['assembling-machine']['centrifuge-mk04'].crafting_categories, 'centrifuging-2')
-        table.insert(data.raw['assembling-machine']['centrifuge-mk04'].crafting_categories, 'centrifuging-3')
+        local function add_crafting_category(entity_type, entity_name, category_name)
+            local cat = data.raw["recipe-category"] and data.raw["recipe-category"][category_name]
+            local ent = data.raw[entity_type] and data.raw[entity_type][entity_name]
+            if cat and ent and ent.crafting_categories then
+                table.insert(ent.crafting_categories, category_name)
+            end
+        end
+        add_crafting_category("assembling-machine", "centrifuge-mk02", "angels-centrifuging-2")
+        add_crafting_category("assembling-machine", "centrifuge-mk03", "angels-centrifuging-2")
+        add_crafting_category("assembling-machine", "centrifuge-mk03", "angels-centrifuging-3")
+        add_crafting_category("assembling-machine", "centrifuge-mk04", "angels-centrifuging-2")
+        add_crafting_category("assembling-machine", "centrifuge-mk04", "angels-centrifuging-3")
     end
 end
 
 if mods['angelsbioprocessing'] then
     if mods['pyhightech'] then
-        if data.raw.technology["vacuum-tube-electronics"] and data.raw.technology["angels-bio-processing-green"] then
-            TECHNOLOGY("angels-bio-processing-green"):add_prereq("vacuum-tube-electronics")
+        if data.raw.technology["electronics"] and data.raw.technology["angels-bio-processing-green"] then
+            TECHNOLOGY("angels-bio-processing-green"):add_prereq("electronics")
         end
         fun.tech_merge('angels-plastic-1', 'plastics-mk02')
         fun.tech_merge('angels-plastic-2', 'plastics-mk03')
@@ -325,13 +345,13 @@ if mods['angelsbioprocessing'] then
 
         fun.remove_recipe_unlock('angels-algae-green-simple')
 
-        if data.raw.recipe['puffer-butchery-1'] then
-            RECIPE('puffer-butchery-1'):add_result({type = "item", name = "gas-bladder", amount = 1})
-            data.raw.recipe['puffer-butchery-1'].main_product = "gas-bladder"
+        if data.raw.recipe['angels-puffer-butchery-1'] then
+            RECIPE('angels-puffer-butchery-1'):add_result({type = "item", name = "gas-bladder", amount = 1})
+            data.raw.recipe['angels-puffer-butchery-1'].main_product = "gas-bladder"
         end
     end
     if mods['pyalternativeenergy'] then
-        RECIPE('eg-si'):add_ingredient({type = "item", name = "crystal-grindstone", amount = 1})
+        RECIPE('eg-si'):add_ingredient({type = "item", name = "angels-crystal-grindstone", amount = 1})
     end
 end
 
@@ -349,8 +369,8 @@ if mods['angelsaddons-storage'] then
     TECHNOLOGY('angels-logistic-silos'):remove_pack("py-science-pack-2"):remove_pack("chemical-science-pack")
     TECHNOLOGY('angels-logistic-warehouses'):remove_pack("py-science-pack-2"):remove_pack("chemical-science-pack")
     if mods['bobtech'] then
-        TECHNOLOGY('angels-logistic-silos'):remove_pack("advanced-logistic-science-pack")
-        TECHNOLOGY('angels-logistic-warehouses'):remove_pack("advanced-logistic-science-pack")
+        TECHNOLOGY('angels-logistic-silos'):remove_pack("bob-advanced-logistic-science-pack")
+        TECHNOLOGY('angels-logistic-warehouses'):remove_pack("bob-advanced-logistic-science-pack")
     end  
     if mods['pyrawores'] then
         RECIPE('angels-storage-tank-3'):add_ingredient({type = "item", name = "pipe", amount = 15})

@@ -7,23 +7,6 @@ local function set_to_py1(techname)
         {"py-science-pack-1", 1}
     }
 end
-local function token_bio_exists()
-    return (data.raw.tool and data.raw.tool["token-bio"])
-        or (data.raw.item and data.raw.item["token-bio"])
-end
-
-local function set_to_py1_with_bio(techname)
-    if not data.raw.technology[techname] then return end
-    if token_bio_exists() then
-        data.raw.technology[techname].unit.ingredients = {
-            {"token-bio", 1},
-            {"automation-science-pack", 2},
-            {"py-science-pack-1", 1}
-        }
-    else
-        set_to_py1(techname)
-    end
-end
 
 -- PyCoalProcessing removes tech oil-gathering; Angel's (and others) may still list it as a prerequisite.
 local function remove_missing_prereq_from_all_technologies(prereq_name)
@@ -55,15 +38,15 @@ if mods['angelssmelting'] then
     RECIPE('steel-plate'):add_unlock('steel-processing'):remove_ingredient('gas-oxygen')
 
     if mods['pyrawores'] then
-        TECHNOLOGY('angels-solder-smelting-basic'):add_prereq('acetylene')
+        TECHNOLOGY('angels-solder-smelting-1'):add_prereq('acetylene')
 
-        fun.global_prereq_replacer('solder-mk01', 'angels-solder-smelting-basic')
+        fun.global_prereq_replacer('solder-mk01', 'angels-solder-smelting-1')
 
         data.raw.technology['solder-mk01'].hidden = true
         data.raw.technology['solder-mk01'].enabled = false
         data.raw.technology['solder-mk01'].effects = {}
 
-        TECHNOLOGY('steel-processing'):add_prereq('water-washing-1')
+        TECHNOLOGY('steel-processing'):add_prereq('angels-water-washing-1')
 
         fun.tech_remove_recipe('coal-processing-1', 'extract-limestone-01')
 
@@ -78,11 +61,8 @@ end
 if mods['angelspetrochem'] then
     if mods['pyhightech'] then
         TECHNOLOGY('angels-nitrogen-processing-1'):remove_prereq('angels-basic-chemistry')
-        if data.raw.technology["vacuum-tube-electronics"] then
-            TECHNOLOGY("vacuum-tube-electronics"):add_prereq("angels-nitrogen-processing-1")
-        end
-        if data.raw.technology["angels-mining-with-fluid"] then
-            TECHNOLOGY("angels-mining-with-fluid"):remove_prereq("steel-processing")
+        if data.raw.technology["electronics"] then
+            TECHNOLOGY("electronics"):add_prereq("angels-nitrogen-processing-1")
         end
     end
     if mods['pyalienlife'] then
@@ -99,8 +79,7 @@ if mods['angelspetrochem'] then
         set_to_py1('angels-advanced-chemistry-1')
         set_to_py1('angels-basic-chemistry-3')
         set_to_py1('angels-resins')
-        set_to_py1('resin-1')
-        set_to_py1('angels-sulfur-processing-1')
+        set_to_py1('angels-resin-1')
         if mods['pypetroleumhandling'] then
             TECHNOLOGY('angels-nitrogen-processing-4'):remove_prereq('angels-advanced-chemistry-5'):remove_pack('utility-science-pack')
             TECHNOLOGY('angels-nitrogen-processing-4'):add_prereq('py-science-pack-3')
@@ -126,8 +105,8 @@ if mods['angelsbioprocessing'] then
     set_artifact_tech_unit_ingredients("angels-alien-artifact-purple", "alien-artifact-purple-tool")
     set_artifact_tech_unit_ingredients("angels-alien-artifact", "alien-artifact-tool")
     if mods['pyalienlife'] then
-        set_to_py1_with_bio('angels-bio-fermentation')
-        set_to_py1_with_bio('angels-bio-arboretum-temperate-1')
+        set_to_py1('angels-bio-fermentation')
+        set_to_py1('angels-bio-arboretum-temperate-1')
     end
     if mods['pyalternativeenergy'] then
         TECHNOLOGY('silicon-mk01'):add_prereq('angels-bio-processing-crystal-splinter-1')
@@ -146,7 +125,7 @@ if mods['angelsaddons-storage'] then
         RECIPE('angels-pressure-tank-1'):replace_ingredient("pipe", "niobium-pipe")
     end
     if mods['pyfusionenergy'] then
-        RECIPE('angels-pressure-tank-1'):change_category('crafting-with-fluid')
+        RECIPE('angels-pressure-tank-1'):set_fields{ categories = {'crafting-with-fluid'} }
         RECIPE('angels-pressure-tank-1'):add_ingredient({type = "item", name = "vacuum-pump-mk01", amount = 5}):add_ingredient({type = "item", name = "advanced-circuit", amount = 1}):add_ingredient({type = "fluid", name = "vacuum", amount = 200})
     end
     if mods['pyrawores'] then

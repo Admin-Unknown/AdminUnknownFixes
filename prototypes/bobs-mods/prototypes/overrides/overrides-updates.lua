@@ -23,18 +23,18 @@ if mods['bobelectronics'] then
             RECIPE('offshore-pump'):remove_ingredient('bob-basic-circuit-board')
             RECIPE('assembling-machine-1'):remove_ingredient('bob-basic-circuit-board')
 
-            RECIPE('algae-farm'):replace_ingredient('bob-basic-circuit-board', 'inductor1')
+            RECIPE('angels-algae-farm'):replace_ingredient('bob-basic-circuit-board', 'inductor1')
             RECIPE('repair-pack'):replace_ingredient('bob-basic-circuit-board', 'inductor1')
             RECIPE('lab'):replace_ingredient('bob-basic-circuit-board', 'inductor1')
 
-            RECIPE('algae-farm-2'):replace_ingredient('bob-basic-circuit-board', 'electronic-circuit')
+            RECIPE('angels-algae-farm-2'):replace_ingredient('bob-basic-circuit-board', 'electronic-circuit')
             RECIPE('bob-repair-pack-2'):replace_ingredient('bob-basic-circuit-board', 'electronic-circuit')
 
             RECIPE('assembling-machine-1'):add_ingredient({type = "item", name = "inductor1", amount = 3})
 
             TECHNOLOGY('automation'):add_prereq('coal-processing-1')
             if settings.startup["bobmods-logistics-beltoverhaul"].value then
-                TECHNOLOGY('bob-logistics-0'):add_prereq('coal-processing-1')
+                TECHNOLOGY('logistics-0'):add_prereq('coal-processing-1')
             end
             
             if mods['boblogistics'] then
@@ -52,9 +52,7 @@ if mods['boblogistics'] then
     RECIPE('bob-repair-pack-2'):remove_ingredient("iron-gear-wheel"):add_ingredient({type = "item", name = "repair-pack", amount = 1})
 
     if settings.startup['bobmods-logistics-inserteroverhaul'].value then
-        fun.ingredient_replace('rare-earth-mine','fast-inserter','red-inserter')
-
-        RECIPE('yellow-filter-inserter'):add_unlock('logistics')
+        fun.ingredient_replace('rare-earth-mine','fast-inserter','bob-red-inserter')
     end
 
     if mods['pyindustry'] then
@@ -63,9 +61,9 @@ if mods['boblogistics'] then
     if mods['pyhightech'] then
       --more robot stuff
       RECIPE('bob-repair-pack-2'):remove_ingredient("electronic-circuit"):add_ingredient({type = "item", name = "pcb1", amount = 1})
-      RECIPE('bob-robot-brain-construction'):remove_ingredient("advanced-circuit")
-      RECIPE('bob-robot-brain-construction'):add_ingredient({type = "item", name = "plastic-bar", amount = 5})
-      RECIPE('py-construction-robot-mk01'):add_ingredient({type = "item", name = "bob-robot-brain-construction", amount = 1})
+      RECIPE('bob-robot-brain'):remove_ingredient("advanced-circuit")
+      RECIPE('bob-robot-brain'):add_ingredient({type = "item", name = "plastic-bar", amount = 5})
+      RECIPE('py-construction-robot-mk01'):add_ingredient({type = "item", name = "bob-robot-brain", amount = 1})
       RECIPE('py-construction-robot-mk01'):add_ingredient({type = "item", name = "bob-robot-tool-construction", amount = 1})
       RECIPE('py-construction-robot-mk01'):remove_ingredient("electronic-circuit")
       RECIPE('bob-roboport-antenna-1'):replace_ingredient("advanced-circuit", "electronic-circuit")
@@ -80,7 +78,7 @@ if mods['boblogistics'] then
         data.raw['underground-belt']['underground-belt'].max_distance = 9 + logilevel
         data.raw['underground-belt']['fast-underground-belt'].max_distance = 17 + logilevel
         data.raw['underground-belt']['express-underground-belt'].max_distance = 33 + logilevel
-        data.raw['underground-belt']['bob-turbo-underground-belt'].max_distance = 65 + logilevel
+        data.raw['underground-belt']['turbo-underground-belt'].max_distance = 65 + logilevel
         data.raw['underground-belt']['bob-ultimate-underground-belt'].max_distance = 129 + logilevel
     end
 end
@@ -104,11 +102,11 @@ end
 
 if mods['bobores'] then
     if mods['pyrawores'] then
-        if data.raw.resource['bob-ore-aluminium'] then
-            data.raw.resource['bob-ore-aluminium'].minable.results = {
+        if data.raw.resource['bob-bauxite-ore'] then
+            data.raw.resource['bob-bauxite-ore'].minable.results = {
                 {
                     type = 'item',
-                    name = 'bauxite-ore',
+                    name = 'ore-aluminium',
                     amount = 1
                 }
             }
@@ -118,12 +116,13 @@ end
 
 if mods['bobplates'] then
     if mods['pyalienlife'] then
-        RECIPE('silicon-carbide'):remove_unlock('grinding')
+        if data.raw.recipe['bob-silicon-carbide'] then
+            RECIPE('bob-silicon-carbide'):remove_unlock('bob-grinding')
+            data.raw.recipe['bob-silicon-carbide'] = nil
+        end
 
-        data.raw.recipe['silicon-carbide'] = nil
-
-        if data.raw.technology['grinding'] then
-            TECHNOLOGY('grinding'):add_prereq('silicon-carbide')
+        if data.raw.technology['bob-grinding'] and data.raw.technology['bob-silicon-carbide'] then
+            TECHNOLOGY('bob-grinding'):add_prereq('bob-silicon-carbide')
         end
 
         if data.raw.technology['bob-fluid-barrel-processing'] then
@@ -242,10 +241,10 @@ if mods['bobassembly'] then
                 name = "circuits",
             },
         })
-        data.raw.recipe["electronic-circuit"].category = "circuits"
-        data.raw.recipe["advanced-circuit"].category = "circuits"
-        data.raw.recipe["processing-unit"].category = "circuits"
-        data.raw.recipe["intelligent-unit"].category = "circuits"
+        data.raw.recipe["electronic-circuit"].categories = {"circuits"}
+        data.raw.recipe["advanced-circuit"].categories = {"circuits"}
+        data.raw.recipe["processing-unit"].categories = {"circuits"}
+        data.raw.recipe["intelligent-unit"].categories = {"circuits"}
         table.insert(data.raw['assembling-machine']['bob-electronics-machine-1'].crafting_categories, 'circuits')
         table.insert(data.raw['assembling-machine']['bob-electronics-machine-2'].crafting_categories, 'circuits')
         table.insert(data.raw['assembling-machine']['bob-electronics-machine-3'].crafting_categories, 'circuits')
@@ -295,18 +294,18 @@ if mods['bobgreenhouse'] then
     end
     if mods['pyalienlife'] and not mods['angelsbioprocessing'] then
         require('__AdminUnknownFixes__/prototypes/bobs-mods/prototypes/recipes/charcoal')
-        TECHNOLOGY('bob-energy-3'):add_prereq('bob-greenhouse')
+        TECHNOLOGY('energy-3'):add_prereq('bob-greenhouse')
     end
 end
 
 if mods['bobwarfare'] then
-    if data.raw.recipe['rocket-engine'] then
-        fun.tech_remove_recipe('rocket-silo', 'rocket-engine')
-        data.raw.recipe['rocket-engine'].ingredients = nil
-        RECIPE('rocket-engine'):add_ingredient({type = "item", name = "low-density-structure", amount = 5})
+    if data.raw.recipe['bob-rocket-engine'] then
+        fun.tech_remove_recipe('rocket-silo', 'bob-rocket-engine')
+        data.raw.recipe['bob-rocket-engine'].ingredients = nil
+        RECIPE('bob-rocket-engine'):add_ingredient({type = "item", name = "low-density-structure", amount = 5})
         if mods['pyrawores'] then
-            RECIPE('rocket-engine'):add_ingredient({type = "item", name = "solder", amount = 20})
-            RECIPE('rocket-engine'):add_ingredient({type = "item", name = "super-steel", amount = 10})
+            RECIPE('bob-rocket-engine'):add_ingredient({type = "item", name = "solder", amount = 20})
+            RECIPE('bob-rocket-engine'):add_ingredient({type = "item", name = "super-steel", amount = 10})
         end
     end
     if data.raw.technology['bob-rocket'] then
@@ -319,17 +318,17 @@ if mods['bobwarfare'] then
 end
 
 if mods['bobrevamp'] then
-    if data.raw.recipe['heat-shield-tile'] then
-        RECIPE('heat-shield-tile'):add_ingredient({type = "item", name = "coke", amount = 5}):add_ingredient({type = "item", name = "graphite", amount = 1}):add_ingredient({type = "item", name = "saps", amount = 10}):add_ingredient({type = "item", name = "nichrome", amount = 2}):remove_ingredient('steel-plate'):remove_ingredient('plastic-bar')
+    if data.raw.recipe['bob-heat-shield-tile'] then
+        RECIPE('bob-heat-shield-tile'):add_ingredient({type = "item", name = "coke", amount = 5}):add_ingredient({type = "item", name = "graphite", amount = 1}):add_ingredient({type = "item", name = "saps", amount = 10}):add_ingredient({type = "item", name = "nichrome", amount = 2}):remove_ingredient('steel-plate'):remove_ingredient('plastic-bar')
         if mods['angelssmelting'] then
-            data.raw.recipe['heat-shield-tile'].category = 'sintering'
+            data.raw.recipe['bob-heat-shield-tile'].categories = {'sintering'}
 
-            if data.raw.technology['heat-shield'] then
-                TECHNOLOGY('heat-shield'):remove_prereq('powder-metallurgy-4'):add_prereq('powder-metallurgy-1'):add_prereq('py-science-pack-3')
+            if data.raw.technology['bob-heat-shield'] then
+                TECHNOLOGY('bob-heat-shield'):remove_prereq('angels-powder-metallurgy-4'):add_prereq('angels-powder-metallurgy-1'):add_prereq('py-science-pack-3')
 
-                OV.remove_science_pack('heat-shield', 'production-science-pack')
+                OV.remove_science_pack('bob-heat-shield', 'production-science-pack')
 
-                TECHNOLOGY('heat-shield'):add_pack("py-science-pack-3")
+                TECHNOLOGY('bob-heat-shield'):add_pack("py-science-pack-3")
             end
         end
     end
@@ -346,9 +345,9 @@ if mods['bobclasses'] then
     table.insert(data.raw['character']['bob-character-engineer'].flags, 'not-in-made-in')
     table.insert(data.raw['character']['bob-character-prospector'].flags, 'not-in-made-in')
     if mods['pyhightech'] then
-        RECIPE('player-power-core'):set_fields{ category = "pa" }:set_fields{energy_required = 45}
-        RECIPE('player-power-core'):remove_ingredient('battery-mk01'):remove_ingredient('rtg'):remove_ingredient('processing-unit')
-        RECIPE('player-power-core'):add_ingredient({type = "item", name = "nexelit-battery", amount = 5}):add_ingredient({type = "item", name = "nuclear-sample", amount = 1}):add_ingredient({type = "item", name = "processing-unit", amount = 15})
+        RECIPE('bob-player-power-core'):set_fields{ categories = {"pa"} }:set_fields{energy_required = 45}
+        RECIPE('bob-player-power-core'):remove_ingredient('battery-mk01'):remove_ingredient('rtg'):remove_ingredient('processing-unit')
+        RECIPE('bob-player-power-core'):add_ingredient({type = "item", name = "nexelit-battery", amount = 5}):add_ingredient({type = "item", name = "nuclear-sample", amount = 1}):add_ingredient({type = "item", name = "processing-unit", amount = 15})
     end
     if mods['pyalternativeenergy'] then
         --mk01
@@ -359,93 +358,93 @@ if mods['bobclasses'] then
         TECHNOLOGY('bob-builder-body'):add_pack('py-science-pack-3')
         TECHNOLOGY('bob-miner-body'):add_pack('py-science-pack-3')
 
-        RECIPE('player-brain'):set_fields{ category = "data-array" }:set_fields{energy_required = 30}
-        RECIPE('player-brain'):remove_ingredient('bob-superior-circuit-board'):remove_ingredient('bob-integrated-electronics'):remove_ingredient('bob-basic-electronic-components'):remove_ingredient('bob-electronic-components')
-        RECIPE('player-brain'):add_ingredient({type = "item", name = "neuroprocessor", amount = 5})
+        RECIPE('bob-player-brain'):set_fields{ categories = {"data-array"} }:set_fields{energy_required = 30}
+        RECIPE('bob-player-brain'):remove_ingredient('bob-superior-circuit-board'):remove_ingredient('bob-integrated-electronics'):remove_ingredient('bob-basic-electronic-components'):remove_ingredient('bob-electronic-components')
+        RECIPE('bob-player-brain'):add_ingredient({type = "item", name = "neuroprocessor", amount = 5})
 
-        RECIPE('player-head'):set_fields{energy_required = 50}
-        RECIPE('player-head'):remove_ingredient('steel-plate'):add_ingredient({type = "item", name = "bones", amount = 22})
+        RECIPE('bob-player-head'):set_fields{energy_required = 50}
+        RECIPE('bob-player-head'):remove_ingredient('steel-plate'):add_ingredient({type = "item", name = "bones", amount = 22})
 
-        RECIPE('player-boots'):set_fields{ category = "crafting-with-fluid" }:set_fields{energy_required = 50}
-        RECIPE('player-boots'):remove_ingredient('steel-plate')
-        RECIPE('player-boots'):add_ingredient({type = "fluid", name = "flue-gas", amount = 200}):add_ingredient({type = "item", name = "skin", amount = 10})
+        RECIPE('bob-player-boots'):set_fields{ categories = {"crafting-with-fluid"} }:set_fields{energy_required = 50}
+        RECIPE('bob-player-boots'):remove_ingredient('steel-plate')
+        RECIPE('bob-player-boots'):add_ingredient({type = "fluid", name = "flue-gas", amount = 200}):add_ingredient({type = "item", name = "skin", amount = 10})
 
-        RECIPE('player-gloves'):set_fields{ category = "nano" }:set_fields{energy_required = 70}
-        RECIPE('player-gloves'):remove_ingredient('steel-plate'):remove_ingredient('small-parts-01')
-        RECIPE('player-gloves'):add_ingredient({type = "item", name = "rayon", amount = 20}):add_ingredient({type = "item", name = "diamond-wire", amount = 5}):add_ingredient({type = "item", name = "latex", amount = 2})
+        RECIPE('bob-player-gloves'):set_fields{ categories = {"nano"} }:set_fields{energy_required = 70}
+        RECIPE('bob-player-gloves'):remove_ingredient('steel-plate'):remove_ingredient('small-parts-01')
+        RECIPE('bob-player-gloves'):add_ingredient({type = "item", name = "rayon", amount = 20}):add_ingredient({type = "item", name = "diamond-wire", amount = 5}):add_ingredient({type = "item", name = "latex", amount = 2})
 
-        RECIPE('player-frame'):set_fields{ category = "nano" }:set_fields{energy_required = 70}
-        RECIPE('player-frame'):remove_ingredient('steel-plate'):remove_ingredient('advanced-circuit'):remove_ingredient('electric-engine-unit')
-        RECIPE('player-frame'):add_ingredient({type = "item", name = "super-steel", amount = 15}):add_ingredient({type = "item", name = "red-wire", amount = 10}):add_ingredient({type = "item", name = "green-wire", amount = 10}):add_ingredient({type = "item", name = "tinned-cable", amount = 50})
+        RECIPE('bob-player-frame'):set_fields{ categories = {"nano"} }:set_fields{energy_required = 70}
+        RECIPE('bob-player-frame'):remove_ingredient('steel-plate'):remove_ingredient('advanced-circuit'):remove_ingredient('electric-engine-unit')
+        RECIPE('bob-player-frame'):add_ingredient({type = "item", name = "super-steel", amount = 15}):add_ingredient({type = "item", name = "red-wire", amount = 10}):add_ingredient({type = "item", name = "green-wire", amount = 10}):add_ingredient({type = "item", name = "tinned-cable", amount = 50})
 
-        RECIPE('character'):set_fields{ category = "creature-chamber" }:set_fields{energy_required = 500}
+        RECIPE('character'):set_fields{ categories = {"creature-chamber"} }:set_fields{energy_required = 500}
         RECIPE('character'):remove_ingredient('assembling-machine-2')
         RECIPE('character'):add_ingredient({type = "item", name = "bones", amount = 184}):add_ingredient({type = "item", name = "bio-sample", amount = 20}):add_ingredient({type = "item", name = "bio-sample", amount = 10}):add_ingredient({type = "item", name = "alien-sample-03", amount = 5}):add_ingredient({type = "item", name = "strorix-unknown-sample", amount = 2}):add_ingredient({type = "item", name = "earth-generic-sample", amount = 4})
         RECIPE('character'):add_ingredient({type = "fluid", name = "fetal-serum", amount = 100}):add_ingredient({type = "fluid", name = "artificial-blood", amount = 300}):add_ingredient({type = "fluid", name = "blood", amount = 700})
 
-        RECIPE('bob-character-builder'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-builder'):remove_ingredient('player-frame'):remove_ingredient('assembling-machine-2')
+        RECIPE('bob-character-builder'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-builder'):remove_ingredient('bob-player-frame'):remove_ingredient('assembling-machine-2')
         RECIPE('bob-character-builder'):add_ingredient({type = "item", name = "character", amount = 1}):add_ingredient({type = "item", name = "mechanical-parts-02", amount = 5})
 
-        RECIPE('bob-character-fighter'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-fighter'):remove_ingredient('assembling-machine-2'):remove_ingredient('exoskeleton-equipment'):remove_ingredient('player-frame')
+        RECIPE('bob-character-fighter'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-fighter'):remove_ingredient('assembling-machine-2'):remove_ingredient('exoskeleton-equipment'):remove_ingredient('bob-player-frame')
         RECIPE('bob-character-fighter'):add_ingredient({type = "item", name = "character", amount = 1}):add_ingredient({type = "item", name = "gunpowder", amount = 20}):add_ingredient({type = "item", name = "pu-239", amount = 15}):add_ingredient({type = "item", name = "energy-shield-mk2-equipment", amount = 1})
 
-        RECIPE('bob-character-miner'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-miner'):remove_ingredient('assembling-machine-2'):remove_ingredient('electric-furnace'):remove_ingredient('player-frame')
+        RECIPE('bob-character-miner'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-miner'):remove_ingredient('assembling-machine-2'):remove_ingredient('electric-furnace'):remove_ingredient('bob-player-frame')
         RECIPE('bob-character-miner'):add_ingredient({type = "item", name = "character", amount = 1}):add_ingredient({type = "item", name = "drill-head", amount = 5}):add_ingredient({type = "fluid", name = "drilling-fluid-1", amount = 200})
         --mk02
         TECHNOLOGY('bob-bodies-2'):remove_prereq('production-science-pack'):remove_prereq('nano-tech'):add_prereq('mass-production'):add_pack('utility-science-pack')
-        TECHNOLOGY('bob-fighter-body-2'):remove_prereq('exoskeleton-equipment-2'):add_prereq('bob-energy-shield-equipment-3'):add_pack('utility-science-pack')
+        TECHNOLOGY('bob-fighter-body-2'):remove_prereq('bob-exoskeleton-equipment-2'):add_prereq('bob-energy-shield-equipment-3'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-miner-body-2'):add_prereq('drilling-fluid-mk04'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-builder-body-2'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-engineer-body'):add_pack('utility-science-pack')
         TECHNOLOGY('bob-prospector-body'):add_pack('utility-science-pack')
 
-        RECIPE('player-brain-2'):set_fields{ category = "data-array" }:set_fields{energy_required = 30}
-        RECIPE('player-brain-2'):remove_ingredient('bob-superior-circuit-board'):remove_ingredient('bob-integrated-electronics'):remove_ingredient('bob-basic-electronic-components'):remove_ingredient('bob-electronic-components'):remove_ingredient('bob-processing-electronics')
-        RECIPE('player-brain-2'):add_ingredient({type = "item", name = "laboratory-grown-brain", amount = 1}):add_ingredient({type = "item", name = "strorix-unknown-sample", amount = 5})
+        RECIPE('bob-player-brain-2'):set_fields{ categories = {"data-array"} }:set_fields{energy_required = 30}
+        RECIPE('bob-player-brain-2'):remove_ingredient('bob-superior-circuit-board'):remove_ingredient('bob-integrated-electronics'):remove_ingredient('bob-basic-electronic-components'):remove_ingredient('bob-electronic-components'):remove_ingredient('bob-processing-electronics')
+        RECIPE('bob-player-brain-2'):add_ingredient({type = "item", name = "laboratory-grown-brain", amount = 1}):add_ingredient({type = "item", name = "strorix-unknown-sample", amount = 5})
 
-        RECIPE('player-boots-2'):set_fields{ category = "crafting-with-fluid" }:set_fields{energy_required = 50}
-        RECIPE('player-boots-2'):remove_ingredient('titanium-plate'):remove_ingredient('rubber')
-        RECIPE('player-boots-2'):add_ingredient({type = "fluid", name = "flue-gas", amount = 200}):add_ingredient({type = "item", name = "skin", amount = 10}):add_ingredient({type = "item", name = "super-alloy", amount = 10})
+        RECIPE('bob-player-boots-2'):set_fields{ categories = {"crafting-with-fluid"} }:set_fields{energy_required = 50}
+        RECIPE('bob-player-boots-2'):remove_ingredient('titanium-plate'):remove_ingredient('rubber')
+        RECIPE('bob-player-boots-2'):add_ingredient({type = "fluid", name = "flue-gas", amount = 200}):add_ingredient({type = "item", name = "skin", amount = 10}):add_ingredient({type = "item", name = "super-alloy", amount = 10})
 
-        RECIPE('player-head-2'):set_fields{ category = "bio-printer" }:set_fields{energy_required = 60}
-        RECIPE('player-head-2'):remove_ingredient('titanium-plate')
-        RECIPE('player-head-2'):add_ingredient({type = "item", name = "bio-scafold", amount = 2})
-        RECIPE('player-head-2'):add_ingredient({type = "fluid", name = "psc", amount = 100}):add_ingredient({type = "fluid", name = "fetal-serum", amount = 100})
+        RECIPE('bob-player-head-2'):set_fields{ categories = {"bio-printer"} }:set_fields{energy_required = 60}
+        RECIPE('bob-player-head-2'):remove_ingredient('titanium-plate')
+        RECIPE('bob-player-head-2'):add_ingredient({type = "item", name = "bio-scafold", amount = 2})
+        RECIPE('bob-player-head-2'):add_ingredient({type = "fluid", name = "psc", amount = 100}):add_ingredient({type = "fluid", name = "fetal-serum", amount = 100})
 
-        RECIPE('player-gloves-2'):set_fields{ category = "nano" }:set_fields{energy_required = 70}
-        RECIPE('player-gloves-2'):remove_ingredient('titanium-plate'):remove_ingredient('small-parts-01')
-        RECIPE('player-gloves-2'):add_ingredient({type = "item", name = "nano-mesh", amount = 20}):add_ingredient({type = "item", name = "biofilm", amount = 10}):add_ingredient({type = "item", name = "aramid", amount = 10}):add_ingredient({type = "item", name = "kevlar", amount = 30}):add_ingredient({type = "item", name = "silver-foam", amount = 5}):add_ingredient({type = "item", name = "science-coating", amount = 2})
+        RECIPE('bob-player-gloves-2'):set_fields{ categories = {"nano"} }:set_fields{energy_required = 70}
+        RECIPE('bob-player-gloves-2'):remove_ingredient('titanium-plate'):remove_ingredient('small-parts-01')
+        RECIPE('bob-player-gloves-2'):add_ingredient({type = "item", name = "nano-mesh", amount = 20}):add_ingredient({type = "item", name = "biofilm", amount = 10}):add_ingredient({type = "item", name = "aramid", amount = 10}):add_ingredient({type = "item", name = "kevlar", amount = 30}):add_ingredient({type = "item", name = "silver-foam", amount = 5}):add_ingredient({type = "item", name = "science-coating", amount = 2})
 
-        RECIPE('player-frame-2'):set_fields{ category = "nano" }:set_fields{energy_required = 70}
-        RECIPE('player-frame-2'):remove_ingredient('titanium-plate'):remove_ingredient('advanced-circuit'):remove_ingredient('electric-engine-unit'):remove_ingredient('processing-unit')
-        RECIPE('player-frame-2'):add_ingredient({type = "item", name = "super-steel", amount = 15}):add_ingredient({type = "item", name = "red-wire", amount = 10}):add_ingredient({type = "item", name = "green-wire", amount = 10}):add_ingredient({type = "item", name = "tinned-cable", amount = 50}):add_ingredient({type = "item", name = "quantum-dots", amount = 10})
+        RECIPE('bob-player-frame-2'):set_fields{ categories = {"nano"} }:set_fields{energy_required = 70}
+        RECIPE('bob-player-frame-2'):remove_ingredient('titanium-plate'):remove_ingredient('advanced-circuit'):remove_ingredient('electric-engine-unit'):remove_ingredient('processing-unit')
+        RECIPE('bob-player-frame-2'):add_ingredient({type = "item", name = "super-steel", amount = 15}):add_ingredient({type = "item", name = "red-wire", amount = 10}):add_ingredient({type = "item", name = "green-wire", amount = 10}):add_ingredient({type = "item", name = "tinned-cable", amount = 50}):add_ingredient({type = "item", name = "quantum-dots", amount = 10})
 
-        RECIPE('bob-character-balanced-2'):set_fields{ category = "creature-chamber" }:set_fields{energy_required = 120}
+        RECIPE('bob-character-balanced-2'):set_fields{ categories = {"creature-chamber"} }:set_fields{energy_required = 120}
         RECIPE('bob-character-balanced-2'):remove_ingredient('assembling-machine-2')
         RECIPE('bob-character-balanced-2'):add_ingredient({type = "item", name = "scafold-free-bones", amount = 1}):add_ingredient({type = "item", name = "in-vitro-meat", amount = 1}):add_ingredient({type = "item", name = "bioartificial-guts", amount = 1}):add_ingredient({type = "item", name = "biomimetic-skin", amount = 1}):add_ingredient({type = "item", name = "tissue-engineered-fat", amount = 1})
         RECIPE('bob-character-balanced-2'):add_ingredient({type = "fluid", name = "fetal-serum", amount = 100}):add_ingredient({type = "fluid", name = "artificial-blood", amount = 50}):add_ingredient({type = "fluid", name = "tholins", amount = 100})
 
-        RECIPE('bob-character-builder-2'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-builder-2'):remove_ingredient('player-frame-2')
+        RECIPE('bob-character-builder-2'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-builder-2'):remove_ingredient('bob-player-frame-2')
         RECIPE('bob-character-builder-2'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "mechanical-parts-04", amount = 5})
 
-        RECIPE('bob-character-engineer'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-engineer'):remove_ingredient('player-frame-2'):remove_ingredient('electric-furnace'):remove_ingredient('assembling-machine-3')
+        RECIPE('bob-character-engineer'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-engineer'):remove_ingredient('bob-player-frame-2'):remove_ingredient('electric-furnace'):remove_ingredient('assembling-machine-3')
         RECIPE('bob-character-engineer'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "mechanical-parts-04", amount = 10}):add_ingredient({type = "item", name = "mega-drill-head", amount = 5})
 
-        RECIPE('bob-character-fighter-2'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-fighter-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('exoskeleton-equipment-2'):remove_ingredient('player-frame-2')
+        RECIPE('bob-character-fighter-2'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-fighter-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('bob-exoskeleton-equipment-2'):remove_ingredient('bob-player-frame-2')
         RECIPE('bob-character-fighter-2'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "exoskeleton-equipment", amount = 1}):add_ingredient({type = "item", name = "energy-shield-mk3-equipment", amount = 1}):add_ingredient({type = "fluid", name = "helium", amount = 100})
 
-        RECIPE('bob-character-miner-2'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-miner-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('bob-electric-furnace-2'):remove_ingredient('player-frame-2')
+        RECIPE('bob-character-miner-2'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-miner-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('bob-electric-furnace-2'):remove_ingredient('bob-player-frame-2')
         RECIPE('bob-character-miner-2'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "mega-drill-head", amount = 10}):add_ingredient({type = "fluid", name = "drilling-fluid-3", amount = 200})
 
-        RECIPE('bob-character-prospector'):set_fields{ category = "biofactory" }:set_fields{energy_required = 50}
-        RECIPE('bob-character-prospector'):remove_ingredient('assembling-machine-2'):remove_ingredient('electric-furnace'):remove_ingredient('player-frame-2')
+        RECIPE('bob-character-prospector'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
+        RECIPE('bob-character-prospector'):remove_ingredient('assembling-machine-2'):remove_ingredient('electric-furnace'):remove_ingredient('bob-player-frame-2')
         RECIPE('bob-character-prospector'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "mega-drill-head", amount = 5})
 
         require('__AdminUnknownFixes__/prototypes/bobs-mods/prototypes/recipes/bodies')
@@ -454,50 +453,6 @@ end
 
 if mods['bobenemies'] then
     require('__AdminUnknownFixes__/prototypes/bobs-mods/prototypes/recipes/alien')
-    if mods['bobtech'] then
-        if mods['pyhightech'] and data.raw.technology["bob-quantum"] then
-            if data.raw.technology["bob-alien-research"] then
-                TECHNOLOGY("bob-quantum"):add_prereq("bob-alien-research")
-            end
-            local bq = data.raw.technology["bob-quantum"]
-            if bq and bq.unit then
-                bq.unit.ingredients = {
-                {
-                    "bob-science-pack-gold",
-                    1
-                },
-                {
-                    "bob-alien-science-pack",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-blue",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-orange",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-purple",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-yellow",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-green",
-                    1
-                },
-                {
-                    "bob-alien-science-pack-red",
-                    1
-                }
-            }
-            end
-        end
-    end
 end
 
 if mods['bobtech'] then
@@ -508,7 +463,7 @@ if mods['bobtech'] then
         table.insert(data.raw.lab["bob-lab-2"].inputs, 'py-science-pack-3')
         table.insert(data.raw.lab["bob-lab-2"].inputs, 'py-science-pack-4')
 
-        data.raw.recipe['bob-advanced-logistic-science-pack'].category = 'research'
+        data.raw.recipe['bob-advanced-logistic-science-pack'].categories = {'research'}
 
         if
             data.raw.item["bob-alien-artifact"]
@@ -519,14 +474,14 @@ if mods['bobtech'] then
             and data.raw.item["bob-alien-artifact-green"]
             and data.raw.item["bob-alien-artifact-red"]
         then
-            data.raw.recipe['bob-science-pack-gold'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-blue'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-orange'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-purple'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-yellow'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-green'].category = 'research'
-            data.raw.recipe['bob-alien-science-pack-red'].category = 'research'
+            data.raw.recipe['bob-science-pack-gold'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-blue'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-orange'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-purple'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-yellow'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-green'].categories = {'research'}
+            data.raw.recipe['bob-alien-science-pack-red'].categories = {'research'}
         end
     end
 end

@@ -1,9 +1,0 @@
-{
-	"name": "pyppatba",
-	"version": "0.0.1",
-	"factorio_version": "2.0",
-	"title": "PyPPTBaA (stub)",
-	"author": "AdminUnknownFixes",
-	"description": "Empty compatibility stub. PyPostProcessing still lists the deprecated Pyanodons Post Processing Touched By an Angel (pyppatba) as a dependency; that content was merged into AdminUnknownFixes. Install this stub alongside AdminUnknownFixes so the dependency checker passes.",
-	"dependencies": ["base >= 2.0.0"]
-}

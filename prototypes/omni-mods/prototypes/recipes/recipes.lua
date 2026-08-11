@@ -3,7 +3,7 @@ local fun = require("functions/functions")
 RECIPE {
     type = "recipe",
     name = "latex0",
-    category = "pulp-basic",
+    categories = {"pulp"},
     enabled = true,
     energy_required = 10,
     ingredients = {
@@ -12,12 +12,12 @@ RECIPE {
     results = {
         {type = 'item', name = 'latex', amount = 1}
     },
-}:change_category('pulp')
+}
 
 RECIPE {
     type = 'recipe',
     name = 'omni-science-pack',
-    category = 'crafting',
+    categories = {'crafting'},
     enabled = true,
     energy_required = 2,
     ingredients = {

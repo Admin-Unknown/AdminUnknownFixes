@@ -22,26 +22,14 @@ local function set_recipe_ingredients(name, ingredients)
     end
 end
 
--- Tech fixes
-with_tech('module-merging', function(t) t:remove_prereq('modules'):add_prereq('advanced-circuit') end)
+-- Tech fixes (Bob modules 3.0: dead names like module-merging / basic-electronics / unprefixed pollution techs removed)
 with_tech('effect-transmission-2', function(t) t:remove_prereq('advanced-electronics-2') end)
-with_tech('pollution-clean-module-1', function(t) t:remove_prereq('modules'):add_prereq('basic-electronics') end)
-with_tech('pollution-create-module-1', function(t) t:remove_prereq('modules'):add_prereq('basic-electronics') end)
-with_tech('pollution-clean-module-3', function(t) t:remove_prereq('advanced-electronics-2') end)
-with_tech('pollution-create-module-3', function(t) t:remove_prereq('advanced-electronics-2') end)
-with_tech('speed-module', function(t) t:remove_prereq('machine-components-mk02'):add_prereq('basic-electronics') end)
-with_tech('productivity-module', function(t) t:remove_prereq('machine-components-mk02'):add_prereq('basic-electronics') end)
-with_tech('efficiency-module', function(t) t:remove_prereq('machine-components-mk02'):add_prereq('basic-electronics') end)
 with_tech('speed-module-2', function(t) t:remove_prereq('advanced-circuit'):remove_prereq('machine-components-mk03') end)
 with_tech('efficiency-module-2', function(t) t:remove_prereq('advanced-circuit'):remove_prereq('machine-components-mk03') end)
 with_tech('productivity-module-2', function(t) t:remove_prereq('advanced-circuit'):remove_prereq('machine-components-mk03') end)
 with_tech('speed-module-3', function(t) t:remove_prereq('nano-tech'):remove_prereq('machine-components-mk04') end)
 with_tech('efficiency-module-3', function(t) t:remove_prereq('nano-tech'):remove_prereq('machine-components-mk04') end)
 with_tech('productivity-module-3', function(t) t:remove_prereq('nano-tech'):remove_prereq('machine-components-mk04') end)
-
-if data.raw.technology["basic-electronics"] then
-    bobmods.lib.tech.add_recipe_unlock("basic-electronics", "lab-module")
-end
 
 -- Module tech costs: scale down since ModulesLab was removed in 2.0
 if data.raw.technology["speed-module-2"] then

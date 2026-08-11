@@ -2,7 +2,7 @@
 RECIPE {
     type = "recipe",
     name = "alien-from-poor",
-    category = "genlab",
+    categories = {"genlab"},
     energy_required = 15,
     ingredients = {
       	{type = 'item', name = 'alien-sample01', amount = 1},
@@ -18,7 +18,7 @@ RECIPE {
 RECIPE {
     type = "recipe",
     name = "alien-from-good",
-    category = "genlab",
+    categories = {"genlab"},
     energy_required = 20,
     ingredients = {
         {type = 'item', name = 'alien-sample-02', amount = 1},
@@ -34,7 +34,7 @@ RECIPE {
 RECIPE {
     type = "recipe",
     name = "alien-from-great",
-    category = "genlab",
+    categories = {"genlab"},
     energy_required = 25,
     ingredients = {
         {type = 'item', name = 'alien-sample-03', amount = 1},
@@ -50,7 +50,7 @@ RECIPE {
 RECIPE {
     type = "recipe",
     name = "alien-from-perfect",
-    category = "genlab",
+    categories = {"genlab"},
     energy_required = 30,
     ingredients = {
         {type = 'item', name = 'perfect-samples', amount = 1},

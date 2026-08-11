@@ -1,5 +1,18 @@
--- Restore sulfur-processing.hidden and global error() after pypostprocessing (see fix-sulfur-processing-prerequisites.lua, patch-pypp-impossible-research-validation.lua).
-require('prototypes/compatibility/restore-sulfur-processing-hidden')
+-- Restore global error() after pypostprocessing (see patch-pypp-impossible-research-validation.lua).
+if _G.__auf_saved_global_error then
+    local e = _G.__auf_saved_global_error
+    _G.__auf_saved_global_error = nil
+    _G.error = e
+    ---@diagnostic disable-next-line: duplicate-set-field
+    error = e
+end
+
+-- Runs after pycoalprocessing's data-final-fixes (hard dependency). Whatever this
+-- logs as rebound is a prototype some earlier final-fixes stripped the
+-- pypostprocessing metatable from, which is what the stamps in data-updates cover.
+local pypp_recipe_meta_guard = require('functions/pypp-recipe-meta-guard')
+pypp_recipe_meta_guard.install()
+pypp_recipe_meta_guard.heal()
 
 --angel mods
 require('prototypes/angels-mods/Data-Final-Fixes')
@@ -26,7 +39,7 @@ if mods['SeaBlockMetaPack'] then
 end
 
 ----------------------------------------------------
--- MERGED FROM PyPPTBaA: Debug logging
+-- Debug logging
 ----------------------------------------------------
 if settings.startup["debug-techcheck"] and settings.startup["debug-techcheck"].value then
     for _, tech in pairs(data.raw.technology) do
@@ -47,7 +60,7 @@ if settings.startup["log-technology"] and data.raw.technology[settings.startup["
 end
 
 ----------------------------------------------------
--- MERGED FROM PyPPTBaA: Global Item Replacer
+-- Global Item Replacer
 ----------------------------------------------------
 require('prototypes/global-item-replacer')
 
@@ -55,12 +68,12 @@ require('prototypes/global-item-replacer')
 require('prototypes/compatibility/fix-chemical-plant-next-upgrade')
 
 ----------------------------------------------------
--- MERGED FROM PyPPTBaA: Ingredient Deduplicator
+-- Ingredient Deduplicator
 ----------------------------------------------------
 require('prototypes/ingredient-deduplicator')
 
 ----------------------------------------------------
--- MERGED FROM PyPPTBaA: Icon fixes
+-- Icon fixes
 ----------------------------------------------------
 if mods['pyhightech'] and mods['bobelectronics'] then
     if data.raw.item['electronic-circuit'] then
@@ -91,3 +104,8 @@ end
 
 -- After all other final-fixes: ensure bob-lab-2 accepts every pack used by Bob gold + alien bullet-line techs.
 require("prototypes/compatibility/fix-bob-lab2-research-inputs")
+
+-- Last thing we do: the helper stamps from data-updates have served their purpose
+-- and Factorio cannot serialise a function field ("Cannot serialise ttype=function").
+pypp_recipe_meta_guard.heal()
+pypp_recipe_meta_guard.strip_function_fields()

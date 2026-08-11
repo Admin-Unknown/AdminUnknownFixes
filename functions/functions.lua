@@ -98,7 +98,7 @@ function overrides.Recipe(recipe)
         ingredients = recipe.ingredients
         results = recipe.results
         icon = recipe.icon
-        category = recipe.category
+        category = (recipe.categories and recipe.categories[1]) or recipe.category
 
         newingredients = true
     elseif drr[recipe.name] ~= nil then
@@ -134,10 +134,12 @@ function overrides.Recipe(recipe)
             icon = drr[name].icon
         end
 
-        if recipe.category ~= nil then
+        if recipe.categories ~= nil then
+            category = recipe.categories[1]
+        elseif recipe.category ~= nil then
             category = recipe.category
         else
-            category = drr[name].category
+            category = (drr[name].categories and drr[name].categories[1]) or drr[name].category
         end
 
     --log(serpent.block(results))
@@ -270,7 +272,7 @@ function overrides.Recipe(recipe)
                 {
                     type = 'recipe',
                     name = name,
-                    category = category or 'crafting',
+                    categories = {category or 'crafting'},
                     subgroup = recipe.subgroup or nil,
                     enabled = recipe.enabled or false,
                     allow_decomposition = recipe.allow_decomposition or false,
@@ -301,7 +303,8 @@ function overrides.Mod_Category(name, Category)
 
     if drr[name] ~= nil then
         if Category ~= nil and dr['recipe-category'][Category] ~= nil then
-            drr[name].category = Category
+            drr[name].categories = {Category}
+            drr[name].category = nil
         end
     end
 
@@ -508,11 +511,16 @@ function overrides.recipe_category_remove(category, blacklist)
     local hiddenrecipes = {}
 
     for r, recipe in pairs(drr) do
-        if recipe.category == category then
-            --log(recipe.category)
-            --log(category)
+        local match = false
+        if recipe.categories then
+            for _, c in pairs(recipe.categories) do
+                if c == category then match = true break end
+            end
+        elseif recipe.category == category then
+            match = true
+        end
+        if match then
             drr[recipe.name].hidden = true
-
             table.insert(hiddenrecipes, recipe.name)
         end
     end
@@ -581,12 +589,21 @@ function overrides.hotairrecipes()
     local afrecipesnames = {}
     local afrcount = 0
     local altrec = 0
+    local function recipe_has_category(recipe, cat)
+        if recipe.categories then
+            for _, c in pairs(recipe.categories) do
+                if c == cat then return true end
+            end
+            return false
+        end
+        return recipe.category == cat
+    end
     for _, recipe in pairs(recipes) do
-        if recipe.category == 'advanced-foundry' then
+        if recipe_has_category(recipe, 'advanced-foundry') then
             table.insert(afrecipes, recipe)
             table.insert(afrecipesnames, recipe.name)
         end
-        if recipe.category == 'smelting' then
+        if recipe_has_category(recipe, 'smelting') then
             table.insert(afrecipes, recipe)
             table.insert(afrecipesnames, recipe.name)
         end
@@ -666,7 +683,7 @@ function overrides.hotairrecipes()
                 RECIPE {
                     type = 'recipe',
                     name = hname,
-                    category = 'hot-air-advanced-foundry',
+                    categories = {'hot-air-advanced-foundry'},
                     enabled = false,
                     energy_required = recipe.energy_required,
                     ingredients = recipe.ingredients,

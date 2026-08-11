@@ -24,7 +24,7 @@ end
 require('prototypes/apm-mods/Data-Updates')
 
 ----------------------------------------------------
--- MERGED FROM PyPPTBaA: Underground belt scaling
+-- Underground belt scaling
 ----------------------------------------------------
 if mods['boblogistics'] then
     local function set_underground_recipe(underground, belt, prev_underground, prev_belt)
@@ -53,11 +53,18 @@ if mods['boblogistics'] then
     set_underground_recipe("underground-belt", "transport-belt", "bob-basic-underground-belt", "bob-basic-transport-belt")
     set_underground_recipe("fast-underground-belt", "fast-transport-belt", "underground-belt", "transport-belt")
     set_underground_recipe("express-underground-belt", "express-transport-belt", "fast-underground-belt", "fast-transport-belt")
-    set_underground_recipe("bob-turbo-underground-belt", "bob-turbo-transport-belt", "express-underground-belt", "express-transport-belt")
-    set_underground_recipe("bob-ultimate-underground-belt", "bob-ultimate-transport-belt", "bob-turbo-underground-belt", "bob-turbo-transport-belt")
+    set_underground_recipe("turbo-underground-belt", "turbo-transport-belt", "express-underground-belt", "express-transport-belt")
+    set_underground_recipe("bob-ultimate-underground-belt", "bob-ultimate-transport-belt", "turbo-underground-belt", "turbo-transport-belt")
 end
 
--- After Angel's Petrochem (optional dep): remap hidden sulfur-processing prerequisites (pypp tech validation).
-require("prototypes/compatibility/fix-sulfur-processing-prerequisites")
 -- Load-order fallback: suppress pypp impossible-to-research (hidden prerequisite) check until our data-final-fixes.
 require("functions/patch-pypp-impossible-research-validation")
+
+-- Last point we control before any data-final-fixes runs, so this is where the
+-- recipe helpers have to be made safe for every mod that final-fixes ahead of us
+-- (pycoalprocessing calls recipe:has_category on all of them). The stamps are
+-- removed again at the end of our own data-final-fixes.
+local pypp_recipe_meta_guard = require("functions/pypp-recipe-meta-guard")
+pypp_recipe_meta_guard.install()
+pypp_recipe_meta_guard.heal()
+pypp_recipe_meta_guard.stamp_recipes()

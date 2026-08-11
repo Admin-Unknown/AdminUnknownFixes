@@ -25,6 +25,6 @@ if mods['pyalienlife'] then
 	end
 	--make all research
 	for i=1,30 do
-		RECIPE("more-science-pack-"..i):change_category('research')
+		RECIPE("more-science-pack-"..i):set_fields{ categories = {'research'} }
 	end 
 end

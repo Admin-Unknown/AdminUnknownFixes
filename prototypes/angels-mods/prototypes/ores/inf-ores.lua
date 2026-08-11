@@ -50,7 +50,7 @@ if mods['pyalternativeenergy'] then
         minimum = angelsmods.ores.yield,
         normal = 1500,
         maximum = 6000,
-        acid_to_mine = data.raw.resource[ore].minable.required_fluid or "liquid-sulfuric-acid",
+        acid_to_mine = data.raw.resource[ore].minable.required_fluid or "sulfuric-acid",
         output_name = output,
         output_min = 1,
         output_max = 1,

@@ -1,11 +1,11 @@
 RECIPE {
     type = "recipe",
     name = "quartz-crucible-real-not-clickbait",
-    category = "crafting",
+    categories = {"crafting"},
     subgroup = "angels-silicon-casting",
     energy_required = 4,
     ingredients = {
-      	{ "ore-quartz", 1 },
+      	{type = "item", name = "ore-quartz", amount = 1},
     },
     results = {
         {type = 'item', name = 'angels-quartz-crucible', amount = 3},

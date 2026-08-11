@@ -22,7 +22,7 @@ end
 
 local function auf_error(message, level)
     if is_pypp_hidden_prereq_tech_tree_msg(message) then
-        log("[AdminUnknownFixes] Suppressed pypostprocessing impossible-to-research (hidden prerequisite) check. See fix-sulfur-processing-prerequisites.lua / bridge overrides.")
+        log("[AdminUnknownFixes] Suppressed pypostprocessing impossible-to-research (hidden prerequisite) check. See bridge overrides.")
         return
     end
     return saved(message, level)

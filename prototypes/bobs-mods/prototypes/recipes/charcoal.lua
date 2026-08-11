@@ -1,12 +1,12 @@
 RECIPE {
     type = "recipe",
     name = "charcoal-from-pellets",
-    category = "electronics",
+    categories = {"crafting"},
     energy_required = 1,
     ingredients = {
-      	{ "wood-pellets", 2 },
+      	{type = "item", name = "bob-wood-pellets", amount = 2},
     },
     results = {
         {type = 'item', name = 'charcoal-briquette', amount = 3},
     },
-}:add_unlock('bob-energy-3')
+}:add_unlock('energy-3')

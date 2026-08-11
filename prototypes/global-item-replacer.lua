@@ -1,4 +1,4 @@
--- Global Item Replacer (merged from PyPPTBaA)
+-- Global Item Replacer
 -- Merges duplicate items between Angel's and Py mods by replacing
 -- Angel's item/fluid names with Py equivalents across all recipes.
 
@@ -153,17 +153,17 @@ global_item_replacer('bob-silicon-carbide', 'sic')
 
 -- Angel's bio items -> Py items
 global_item_replacer('angels-bio-raw-meat', 'meat')
-global_item_replacer('angels-cellulose', 'cellulose')
+global_item_replacer('angels-cellulose-fiber', 'cellulose')
 
 -- Angel's misc -> Py
 global_item_replacer('angels-quartz-crucible', 'quartz-crucible')
 global_item_replacer('angels-mono-silicon', 'silicon')
 
 -- Liquids misc
-global_item_replacer('angels-black-liquor', 'black-liquor')
+global_item_replacer('angels-liquid-black-liquor', 'black-liquor')
 global_item_replacer('angels-liquid-acetic-acid', 'acetic-acid')
 global_item_replacer('angels-liquid-glycerol', 'glycerol')
-global_item_replacer('angels-residual-gas', 'residual-gas')
+global_item_replacer('angels-gas-residual', 'residual-gas')
 
 -- Angel's buildings -> Py buildings (item replacements in recipes)
 global_item_replacer('angels-ore-floatation-cell', 'flotation-cell-mk01')
@@ -186,7 +186,7 @@ global_item_replacer('bob-topup-valve', 'py-underflow-valve')
 global_item_replacer('bob-construction-robot', 'py-construction-robot-mk01')
 
 -- Bob's centrifuges -> Py centrifuges
-global_item_replacer('bob-centrifuge', 'centrifuge-mk01')
+global_item_replacer('centrifuge', 'centrifuge-mk01')
 global_item_replacer('bob-centrifuge-2', 'centrifuge-mk02')
 global_item_replacer('bob-centrifuge-3', 'centrifuge-mk03')
 
@@ -195,18 +195,18 @@ global_item_replacer('bob-battery-equipment', 'battery-mk01')
 global_item_replacer('bob-battery-mk2-equipment', 'nexelit-battery')
 
 -- Angel's petri dish
-global_item_replacer('angels-empty-petri-dish', 'petri-dish')
+global_item_replacer('angels-petri-dish', 'petri-dish')
 
 -- Angel's plates (keep Angel's names where Py doesn't have equivalents)
 global_item_replacer('angels-plate-chrome', 'chromium')
 
 -- Angel's ores -> Py ores
-global_item_replacer('angels-bauxite-ore', 'bauxite-ore')
-global_item_replacer('angels-chrome-ore', 'chrome-ore')
-global_item_replacer('angels-lead-ore', 'lead-ore')
-global_item_replacer('angels-nickel-ore', 'nickel-ore')
-global_item_replacer('angels-tin-ore', 'tin-ore')
-global_item_replacer('angels-zinc-ore', 'zinc-ore')
+global_item_replacer('angels-bauxite-ore', 'ore-aluminium')
+global_item_replacer('angels-chrome-ore', 'ore-chromium')
+global_item_replacer('angels-lead-ore', 'ore-lead')
+global_item_replacer('angels-nickel-ore', 'ore-nickel')
+global_item_replacer('angels-tin-ore', 'ore-tin')
+global_item_replacer('angels-zinc-ore', 'ore-zinc')
 
 -- Angel's plates -> Py plates
 global_item_replacer('bob-aluminium-plate', 'angels-plate-aluminium')
@@ -219,7 +219,7 @@ global_item_replacer('bob-zinc-plate', 'angels-plate-zinc')
 global_item_replacer('bob-wood-charcoal', 'charcoal-briquette')
 
 -- Angel's compressed air
-global_item_replacer('angels-pressured-air', 'pressured-air')
+global_item_replacer('angels-gas-compressed-air', 'pressured-air')
 
 ----------------------------------------------------
 -- FINALIZE

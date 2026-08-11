@@ -1,7 +1,7 @@
 RECIPE {
     type = "recipe",
     name = "sodium-carbonate-from-calcium-chloride",
-    category = "hpf",
+    categories = {"hpf"},
     energy_required = 15,
     ingredients = {
       	{type = 'item', name = 'seaweed', amount = 10},

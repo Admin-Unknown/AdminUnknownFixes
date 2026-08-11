@@ -1,4 +1,4 @@
--- Ingredient Deduplicator (merged from PyPPTBaA)
+-- Ingredient Deduplicator
 -- Removes duplicate ingredients from recipes after global item replacement
 
 local function find_item(name)

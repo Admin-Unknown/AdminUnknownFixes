@@ -34,12 +34,12 @@ end
 --apm mods
 require('prototypes/apm-mods/Data')
 
--- Compatibility fix: reapply pypostprocessing's metatables to any recipe/technology
--- prototype that was added via direct data.raw assignment instead of data:extend.
--- Prevents crashes like pypetroleumhandling's py.global_item_replacer at data-updates
--- stage (e.g. "attempt to call method 'replace_ingredient' (a nil value)").
--- Must run at the end of data.lua, before any data-updates stage begins.
-require('functions/fix-pypp-metatables')
+-- Keeps pypostprocessing's recipe/technology helpers (has_category,
+-- replace_ingredient, add_prereq, ...) reachable on every prototype, including
+-- ones that reached data.raw without going through data:extend. Installs a hook
+-- on data.raw.recipe itself, so mods we cannot order ourselves against — most of
+-- all pycoalprocessing's data-final-fixes — heal as they iterate.
+require('functions/pypp-recipe-meta-guard')
 
 -- No-op TECHNOLOGY() for optional Bob's techs that pypostprocessing touches without guards.
 require('functions/pypp-technology-missing-shim')

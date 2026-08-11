@@ -1,7 +1,7 @@
 RECIPE {
     type = 'recipe',
     name = 'player-head-2-immunosupressants',
-    category = 'bio-printer',
+    categories = {'bio-printer'},
     enabled = false,
     energy_required = 45,
     ingredients = {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Build Factorio release zips for AdminUnknownFixes (repo root), pyppatba (pyppatba-stub/), and PyCoalTBaA (PyCoalTBaA-stub/).
-# Also copies the two stub zips into repo stubs/ for direct-download artifacts.
+# Build Factorio release zips for AdminUnknownFixes (repo root) and PyCoalTBaA (PyCoalTBaA-stub/).
+# Also copies the PyCoalTBaA stub zip into repo stubs/ for direct-download artifacts.
 # Usage (from repo root): ./scripts/package-mods.sh
 # Optional: OUT_DIR=build ./scripts/package-mods.sh   CLEAN=1 ./scripts/package-mods.sh
 
@@ -28,11 +28,6 @@ read_main() {
   MAIN_VER="$(json_field "$ROOT/info.json" version)"
 }
 
-read_stub() {
-  STUB_NAME="$(json_field "$ROOT/pyppatba-stub/info.json" name)"
-  STUB_VER="$(json_field "$ROOT/pyppatba-stub/info.json" version)"
-}
-
 read_pycoal_stub() {
   PYCOAL_NAME="$(json_field "$ROOT/PyCoalTBaA-stub/info.json" name)"
   PYCOAL_VER="$(json_field "$ROOT/PyCoalTBaA-stub/info.json" version)"
@@ -55,16 +50,6 @@ stage_main() {
   done
 }
 
-stage_stub() {
-  local inner="$1"
-  mkdir -p "$inner"
-  shopt -s dotglob nullglob
-  for p in "$ROOT/pyppatba-stub"/*; do
-    cp -R "$p" "$inner/"
-  done
-  shopt -u dotglob nullglob
-}
-
 stage_pycoal_stub() {
   local inner="$1"
   mkdir -p "$inner"
@@ -81,11 +66,9 @@ zip_one() {
 }
 
 read_main
-read_stub
 read_pycoal_stub
 
 MAIN_INNER="${MAIN_NAME}_${MAIN_VER}"
-STUB_INNER="${STUB_NAME}_${STUB_VER}"
 PYCOAL_INNER="${PYCOAL_NAME}_${PYCOAL_VER}"
 
 STAGING="$(mktemp -d "${TMPDIR:-/tmp}/auf-pack.XXXXXX")"
@@ -98,26 +81,21 @@ fi
 mkdir -p "$DIST"
 
 stage_main "$STAGING/$MAIN_INNER"
-stage_stub "$STAGING/$STUB_INNER"
 stage_pycoal_stub "$STAGING/$PYCOAL_INNER"
 
 MAIN_ZIP="$DIST/${MAIN_NAME}_${MAIN_VER}.zip"
-STUB_ZIP="$DIST/${STUB_NAME}_${STUB_VER}.zip"
 PYCOAL_ZIP="$DIST/${PYCOAL_NAME}_${PYCOAL_VER}.zip"
-rm -f "$MAIN_ZIP" "$STUB_ZIP" "$PYCOAL_ZIP"
+rm -f "$MAIN_ZIP" "$PYCOAL_ZIP"
 
 zip_one "$STAGING" "$MAIN_INNER" "$MAIN_ZIP"
-zip_one "$STAGING" "$STUB_INNER" "$STUB_ZIP"
 zip_one "$STAGING" "$PYCOAL_INNER" "$PYCOAL_ZIP"
 
 echo "Wrote:"
 echo "  $MAIN_ZIP"
-echo "  $STUB_ZIP"
 echo "  $PYCOAL_ZIP"
 
 STUBS="$ROOT/stubs"
 mkdir -p "$STUBS"
-cp -f "$STUB_ZIP" "$PYCOAL_ZIP" "$STUBS/"
-echo "Copied stub zips to:"
-echo "  $STUBS/$(basename "$STUB_ZIP")"
+cp -f "$PYCOAL_ZIP" "$STUBS/"
+echo "Copied stub zip to:"
 echo "  $STUBS/$(basename "$PYCOAL_ZIP")"

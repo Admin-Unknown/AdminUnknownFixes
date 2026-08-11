@@ -34,14 +34,14 @@ if mods['bobrevamp'] then
 	if mods['bobplates'] then
 		fun.global_prereq_replacer('chemical-plant', 'machines-mk01')
 	end
-	if data.raw.technology['chemical-plant-4'] ~= nil then
-		data.raw.technology['chemical-plant-4'] = nil
+	if data.raw.technology['bob-chemical-plant-4'] ~= nil then
+		data.raw.technology['bob-chemical-plant-4'] = nil
 	end
-	if data.raw.technology['chemical-plant-3'] ~= nil then
-		data.raw.technology['chemical-plant-3'] = nil
+	if data.raw.technology['bob-chemical-plant-3'] ~= nil then
+		data.raw.technology['bob-chemical-plant-3'] = nil
 	end
-	if data.raw.technology['chemical-plant-2'] ~= nil then
-		data.raw.technology['chemical-plant-2'] = nil
+	if data.raw.technology['bob-chemical-plant-2'] ~= nil then
+		data.raw.technology['bob-chemical-plant-2'] = nil
 	end
 	if data.raw.technology['chemical-plant'] ~= nil then
 		data.raw.technology['chemical-plant'] = nil
@@ -95,24 +95,24 @@ if mods['bobequipment'] then
     		time = 300
   		}
 
-		TECHNOLOGY('exoskeleton-equipment-2'):remove_prereq('chemical-science-pack')
-		TECHNOLOGY('exoskeleton-equipment-2'):add_pack('production-science-pack')
-		TECHNOLOGY('exoskeleton-equipment-2'):add_prereq('machine-components-mk04'):add_prereq('power-armor')
+		TECHNOLOGY('bob-exoskeleton-equipment-2'):remove_prereq('chemical-science-pack')
+		TECHNOLOGY('bob-exoskeleton-equipment-2'):add_pack('production-science-pack')
+		TECHNOLOGY('bob-exoskeleton-equipment-2'):add_prereq('machine-components-mk04'):add_prereq('power-armor')
 
 		TECHNOLOGY('laika'):remove_prereq('exoskeleton-equipment')
-		TECHNOLOGY('laika'):add_prereq('exoskeleton-equipment-2')
+		TECHNOLOGY('laika'):add_prereq('bob-exoskeleton-equipment-2')
 
-		fun.results_replacer('exoskeleton-equipment', 'exoskeleton-equipment', 'exoskeleton-equipment-2')
-		fun.results_replacer('exoskeleton-equipment-2', 'exoskeleton-equipment-2', 'exoskeleton-equipment')
+		fun.results_replacer('exoskeleton-equipment', 'exoskeleton-equipment', 'bob-exoskeleton-equipment-2')
+		fun.results_replacer('bob-exoskeleton-equipment-2', 'bob-exoskeleton-equipment-2', 'exoskeleton-equipment')
 
-		fun.tech_add_recipe('exoskeleton-equipment', 'exoskeleton-equipment-2')
-		fun.tech_add_recipe('exoskeleton-equipment-2', 'exoskeleton-equipment')
+		fun.tech_add_recipe('exoskeleton-equipment', 'bob-exoskeleton-equipment-2')
+		fun.tech_add_recipe('bob-exoskeleton-equipment-2', 'exoskeleton-equipment')
 
 		fun.tech_remove_recipe('exoskeleton-equipment', 'exoskeleton-equipment')
-		fun.tech_remove_recipe('exoskeleton-equipment-2', 'exoskeleton-equipment-2')
+		fun.tech_remove_recipe('bob-exoskeleton-equipment-2', 'bob-exoskeleton-equipment-2')
 
-		data.raw.recipe['exoskeleton-equipment-2'].ingredients = nil
-		RECIPE('exoskeleton-equipment-2'):add_ingredient({type = "item", name = "low-density-structure", amount = 2}):add_ingredient({type = "item", name = "mechanical-parts-03", amount = 1}):add_ingredient({type = "item", name = "brake-03", amount = 1}):add_ingredient({type = "item", name = "gearbox-mk03", amount = 1}):add_ingredient({type = "item", name = "hydraulic-system-mk01", amount = 1})
+		data.raw.recipe['bob-exoskeleton-equipment-2'].ingredients = nil
+		RECIPE('bob-exoskeleton-equipment-2'):add_ingredient({type = "item", name = "low-density-structure", amount = 2}):add_ingredient({type = "item", name = "mechanical-parts-03", amount = 1}):add_ingredient({type = "item", name = "brake-03", amount = 1}):add_ingredient({type = "item", name = "gearbox-mk03", amount = 1}):add_ingredient({type = "item", name = "hydraulic-system-mk01", amount = 1})
 
 	end
 end

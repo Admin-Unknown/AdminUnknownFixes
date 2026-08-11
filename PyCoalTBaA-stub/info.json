@@ -1,9 +1,12 @@
 {
 	"name": "PyCoalTBaA",
-	"version": "0.0.1",
-	"factorio_version": "2.0",
+	"version": "0.0.7",
+	"factorio_version": "2.1",
 	"title": "PyCoalTBaA (stub)",
 	"author": "AdminUnknownFixes",
-	"description": "Empty compatibility stub. PyPostProcessing data-final-fixes requires mod PyCoalTBaA (PyCoal Touched By an Angel) when Angel's Refining is active; that bridge content was merged into AdminUnknownFixes. Install this stub alongside AdminUnknownFixes so the PyCoalTBaA mod name is registered and the compatibility check passes.",
-	"dependencies": ["base >= 2.0.0"]
+	"description": "Compatibility stub for AdminUnknownFixes. Registers the PyCoalTBaA name that PyPostProcessing requires when Angel's Refining is active, and stamps recipe:has_category in data-updates so pycoalprocessing's data-final-fixes checks cannot crash. Works standalone.",
+	"dependencies": [
+		"base >= 2.1.0",
+		"pypostprocessing >= 3.1.2"
+	]
 }

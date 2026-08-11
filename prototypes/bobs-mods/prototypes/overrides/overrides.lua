@@ -26,37 +26,11 @@ if mods['bobgreenhouse'] then
       if data.raw.technology["bob-greenhouse"] then
          TECHNOLOGY("bob-greenhouse"):add_prereq("glass")
       end
-      if data.raw.item["wood-pellets"] then
-         data.raw.item["wood-pellets"].fuel_category = "biomass"
+      if data.raw.item["bob-wood-pellets"] then
+         data.raw.item["bob-wood-pellets"].fuel_category = "biomass"
       end
-      if data.raw.item["seedling"] then
-         data.raw.item["seedling"].fuel_category = "biomass"
-      end
-   end
-end
-
-if mods['bobmining'] then
-   TECHNOLOGY("bob-steel-axe-3"):add_prereq("logistic-science-pack")
-   TECHNOLOGY("bob-steel-axe-4"):add_prereq("chemical-science-pack")
-   TECHNOLOGY("bob-steel-axe-5"):add_prereq("production-science-pack")
-   TECHNOLOGY("bob-steel-axe-6"):add_prereq("utility-science-pack")
-   local steel_axe_2 = data.raw.technology["bob-steel-axe-2"]
-   if mods['pyalienlife'] then
-      TECHNOLOGY("bob-steel-axe-2"):add_prereq("py-science-pack-1")
-      -- Skip science-pack swap when the technology uses a research_trigger (no unit/packs)
-      if steel_axe_2 and not steel_axe_2.research_trigger then
-         TECHNOLOGY("bob-steel-axe-2"):remove_pack("logistic-science-pack"):add_pack("py-science-pack-1")
-      end
-   else
-      TECHNOLOGY("bob-steel-axe-2"):add_prereq("logistic-science-pack")
-   end
-end
-
-if mods['bobplates'] then
-   if mods['pyalienlife'] then
-      --fix crash with PyAL update, version 2.1.11
-      if data.raw.fluid['xyhiphoe-blood'] then
-         data.raw.fluid['xyhiphoe-blood'].auto_barrel = false
+      if data.raw.item["bob-seedling"] then
+         data.raw.item["bob-seedling"].fuel_category = "biomass"
       end
    end
 end

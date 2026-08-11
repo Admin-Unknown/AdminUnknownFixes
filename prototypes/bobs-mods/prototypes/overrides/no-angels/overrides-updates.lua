@@ -1,6 +1,6 @@
 if mods['bobrevamp'] then
 	if mods['pyalienlife'] then
-		RECIPE('bio-oil-4'):replace_result('petroleum-gas', 'sour-gas')
+		RECIPE('bio-oil-4'):replace_result('petroleum-gas', 'bob-sour-gas')
 	end
 end
 
@@ -21,10 +21,10 @@ if mods['bobplates'] then
             data.raw.resource['ore-lead'] = nil
             data.raw['autoplace-control']['ore-lead'] = nil
             --aluminuminum
-            data.raw.resource['bob-ore-aluminium'] = nil
-            data.raw['autoplace-control']['bob-ore-aluminium'] = nil
-            data.raw.resource['bauxite-ore'].minable.fluid_amount = 100
-        	data.raw.resource['bauxite-ore'].minable.required_fluid = "coal-gas"
+            data.raw.resource['bob-bauxite-ore'] = nil
+            data.raw['autoplace-control']['bob-bauxite-ore'] = nil
+            data.raw.resource['ore-aluminium'].minable.fluid_amount = 100
+        	data.raw.resource['ore-aluminium'].minable.required_fluid = "coal-gas"
             --nickel
             data.raw.resource['ore-nickel'] = nil
             data.raw['autoplace-control']['ore-nickel'] = nil
@@ -33,8 +33,8 @@ if mods['bobplates'] then
             --titanium
             data.raw.resource['ore-titanium'] = nil
             data.raw['autoplace-control']['ore-titanium'] = nil
-            data.raw.resource['rutile-ore'].minable.fluid_amount = 40
-            data.raw.resource['rutile-ore'].minable.required_fluid = (mods["pyfusionenergy"] and "acetylene" or "syngas")
+            data.raw.resource['bob-rutile-ore'].minable.fluid_amount = 40
+            data.raw.resource['bob-rutile-ore'].minable.required_fluid = (mods["pyfusionenergy"] and "acetylene" or "syngas")
             --tin
             data.raw.resource['ore-tin'] = nil
             data.raw['autoplace-control']['ore-tin'] = nil
@@ -45,24 +45,24 @@ if mods['bobplates'] then
 		data.raw.recipe['silver-plate'].enabled = false
     	data.raw.recipe['silver-plate'].hidden = true
 
-    	RECIPE('silver-plate-1'):add_ingredient({type = "item", name = "silver-ore", amount = 18})
-    	RECIPE('slz-pulp-01'):add_ingredient({type = "item", name = "silver-ore", amount = 4})
-    	RECIPE('sl-01-2'):add_ingredient({type = "item", name = "silver-ore", amount = 6})
-    	RECIPE('molten-silver-01'):add_ingredient({type = "item", name = "silver-ore", amount = 4})
+    	RECIPE('silver-plate-1'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 18})
+    	RECIPE('slz-pulp-01'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 4})
+    	RECIPE('sl-01-2'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 6})
+    	RECIPE('molten-silver-01'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 4})
 
-        TECHNOLOGY('lead-processing'):add_prereq('silver-mk01')
+        TECHNOLOGY('bob-lead-processing'):add_prereq('silver-mk01')
 
-        RECIPE('bob-gold-plate'):remove_ingredient('gold-ore')
-        RECIPE('bob-gold-plate'):add_ingredient({type = "item", name = "gold-ore", amount = 10})
+        RECIPE('bob-gold-plate'):remove_ingredient('bob-gold-ore')
+        RECIPE('bob-gold-plate'):add_ingredient({type = "item", name = "bob-gold-ore", amount = 10})
 
-        RECIPE('gold-precipitate'):add_ingredient({type = "item", name = "gold-ore", amount = 5})
+        RECIPE('gold-precipitate'):add_ingredient({type = "item", name = "bob-gold-ore", amount = 5})
 
-        TECHNOLOGY('nickel-mk01'):add_prereq('nickel-procesing')
+        TECHNOLOGY('nickel-mk01'):add_prereq('bob-nickel-processing')
 
-        TECHNOLOGY('invar-processing'):remove_prereq('logistic-science-pack')
-        TECHNOLOGY('invar-processing'):remove_pack('logistic-science-pack')
+        TECHNOLOGY('bob-invar-processing'):remove_prereq('logistic-science-pack')
+        TECHNOLOGY('bob-invar-processing'):remove_pack('logistic-science-pack')
 	end
-    RECIPE('silicon-nitride'):add_ingredient({type = "item", name = "ceramic", amount = 5})
+    RECIPE('bob-silicon-nitride'):add_ingredient({type = "item", name = "ceramic", amount = 5})
 
     if settings.startup["bobmods-plates-purewater"].value and settings.startup["bobmods-assembly-distilleries"].value then
         for i, machine in pairs(data.raw['assembling-machine']) do
@@ -89,12 +89,12 @@ end
 
 if mods['bobelectronics'] then
 	if mods['pycoalprocessing'] then
-		if data.raw.recipe['ferric-chloride-solution'] then
-            RECIPE('ferric-chloride-solution'):add_unlock('sulfur-processing')
-            RECIPE('ferric-chloride-solution'):set_fields{ category = "chemistry" }:set_fields{energy_required = 3}
-            RECIPE('ferric-chloride-solution'):remove_ingredient('iron-ore')
-            RECIPE('ferric-chloride-solution'):add_ingredient({type = "fluid", name = "acidgas", amount = 5}):add_ingredient({type = "item", name = "iron-ore", amount = 10})
-            table.insert(data.raw.recipe['ferric-chloride-solution'].results, {type = "fluid", name = "acidgas", amount = 6, probability = 0.5})
+		if data.raw.recipe['bob-ferric-chloride-solution'] then
+            RECIPE('bob-ferric-chloride-solution'):add_unlock('sulfur-processing')
+            RECIPE('bob-ferric-chloride-solution'):set_fields{ categories = {"chemistry"} }:set_fields{energy_required = 3}
+            RECIPE('bob-ferric-chloride-solution'):remove_ingredient('iron-ore')
+            RECIPE('bob-ferric-chloride-solution'):add_ingredient({type = "fluid", name = "acidgas", amount = 5}):add_ingredient({type = "item", name = "iron-ore", amount = 10})
+            table.insert(data.raw.recipe['bob-ferric-chloride-solution'].results, {type = "fluid", name = "acidgas", amount = 6, probability = 0.5})
         end
 	end
 
@@ -103,8 +103,8 @@ if mods['bobelectronics'] then
     end
 
 	if mods['pypetroleumhandling'] then
-		RECIPE('synthetic-wood'):add_unlock('heavy-oil-mk01')
-		RECIPE('synthetic-wood'):remove_unlock('plastics')
+		RECIPE('bob-synthetic-wood'):add_unlock('heavy-oil-mk01')
+		RECIPE('bob-synthetic-wood'):remove_unlock('plastics')
 		RECIPE('bob-resin-oil'):add_unlock('heavy-oil-mk01')
 	end
 
@@ -119,20 +119,20 @@ if mods['bobelectronics'] then
 
         data.raw.technology['advanced-electronics-3'] = nil
 
-        RECIPE('pcb4'):add_ingredient({type = "fluid", name = "ferric-chloride-solution", amount = 100})
+        RECIPE('pcb4'):add_ingredient({type = "fluid", name = "bob-ferric-chloride-solution", amount = 100})
 
         TECHNOLOGY('bob-repair-pack-3'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
         TECHNOLOGY('bob-drills-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
         TECHNOLOGY('bob-area-drills-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('vehicle-energy-sheild-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('personal-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('fluid-generator-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('vehicle-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-vehicle-shield-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-personal-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-fluid-generator-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-vehicle-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
         TECHNOLOGY('bob-electronics-machine-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
         TECHNOLOGY('bob-electric-energy-accumulators-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('electric-substation-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('advanced-research'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('vehicle-laser-defense-equipment-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-electric-substation-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-advanced-research'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        TECHNOLOGY('bob-vehicle-laser-defense-equipment-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
 	end
 
 	if mods['pyalienlife'] then
@@ -142,12 +142,12 @@ end
 
 if mods['bobrevamp'] then
     if bobmods.plates and settings.startup["bobmods-revamp-rtg"].value and settings.startup["bobmods-revamp-hardmode"].value then
-        bobmods.lib.recipe.remove_result('ammoniated-brine', 'ammoniated-brine')
-        bobmods.lib.recipe.add_result("ammoniated-brine", { type = "fluid", name = "ammoniated-brine", amount = 35 })
+        bobmods.lib.recipe.remove_result('bob-ammoniated-brine', 'bob-ammoniated-brine')
+        bobmods.lib.recipe.add_result("bob-ammoniated-brine", { type = "fluid", name = "bob-ammoniated-brine", amount = 35 })
         if mods['pyalternativeenergy'] then
             require('__AdminUnknownFixes__/prototypes/bobs-mods/prototypes/recipes/sodium-carbonate')
-            bobmods.lib.recipe.remove_result('ammonium-chloride-recycling', 'ammonia')
-                bobmods.lib.recipe.add_result("ammonium-chloride-recycling", { type = "fluid", name = "ammonia", amount = 30 })
+            bobmods.lib.recipe.remove_result('bob-ammonium-chloride-reprocessing', 'ammonia')
+                bobmods.lib.recipe.add_result("bob-ammonium-chloride-reprocessing", { type = "fluid", name = "ammonia", amount = 30 })
 
             bobmods.lib.tech.add_prerequisite('nuclear-power-mk02', 'rtg')
             bobmods.lib.tech.add_prerequisite('spidertron', 'nuclear-power-mk02')
