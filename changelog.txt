@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.12
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load crash on data.raw.recipe['nitrogen']. The name was right but the recipe is pyrawores', not bobplates', so the override ran in games that have no nitrogen recipe at all
+    - Guard every other prototype we touch whose owning mod the surrounding condition does not actually guarantee, so a partial mod set no longer aborts the load: the twelve prereq swaps in the no-angels electronics block reach into bobmining, bobpower, bobtech, bobassembly, bobequipment, bobvehicleequipment and boblogistics; the drill technologies under boblogistics are bobmining's; laika, crusher-2 and electric-mining-drill are pyalienlife's; py-burner is pyindustry's; water treatment and the clarifier are angelsrefining's, not angelspetrochem's
+    - Only apply the belt-overhaul prereq when boblogistics is present, since both the setting it reads and the logistics-0 technology come from that mod
+    - The pyhardmode void-machine conversion no longer assumes the clarifier exists; without angelsrefining it was turning a missing furnace into an assembling machine
+    - Rewrite the prod-for-sinners module pass as a loop that skips modules that are not installed. The setting says nothing about whether pyalienlife or pyalternativeenergy is on, so all 84 of those lines could crash
+    - Bob's 2.0 renamed its ore resources: the mining fluid overrides now use bob-zinc-ore, bob-nickel-ore and bob-tin-ore, and the hidden duplicate plate recipe is bob-silver-plate
+  Modding:
+    - Add scripts/check-optional-deps.ps1, which finds the class of bug above by resolving which mod defines each prototype we touch and asking whether reaching that line requires the mod to be installed. It splits results by consequence, because a missing TECHNOLOGY() or FLUID() aborts the load while a missing RECIPE() only skips the override
+    - check-prototype-names.ps1 now asks whether a prototype of the right type exists rather than whether any mod mentions the name, which is what let recipe 'nitrogen' pass while a fluid of that name existed. It no longer skips single-word names either
+---------------------------------------------------------------------------------------------------
 Version: 2.1.11
 Date: 2026-08-10
   Bugfixes:

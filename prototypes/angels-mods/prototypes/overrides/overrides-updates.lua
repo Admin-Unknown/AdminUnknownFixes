@@ -226,17 +226,21 @@ if mods['angelspetrochem'] then
     end
     if mods['pyhardmode'] then
         --This code is by NotNotMelon
+        -- the clarifier is angelsrefining's while the flare stack is angelspetrochem's,
+        -- so either one can be absent here
         for _, void_machine in pairs{'angels-clarifier', 'angels-flare-stack'} do
-            data.raw['assembling-machine'][void_machine] = data.raw.furnace[void_machine]
-            data.raw['assembling-machine'][void_machine].type = 'assembling-machine'
-            data.raw['assembling-machine'][void_machine].crafting_speed = 1
-            data.raw['assembling-machine'][void_machine].energy_source = {
-                type = 'electric',
-                usage_priority = 'secondary-input',
-                emissions_per_minute = {pollution = 0},
-            }
-            data.raw['assembling-machine'][void_machine].energy_usage = '100kW'
-            data.raw.furnace[void_machine] = nil
+            if data.raw.furnace[void_machine] then
+                data.raw['assembling-machine'][void_machine] = data.raw.furnace[void_machine]
+                data.raw['assembling-machine'][void_machine].type = 'assembling-machine'
+                data.raw['assembling-machine'][void_machine].crafting_speed = 1
+                data.raw['assembling-machine'][void_machine].energy_source = {
+                    type = 'electric',
+                    usage_priority = 'secondary-input',
+                    emissions_per_minute = {pollution = 0},
+                }
+                data.raw['assembling-machine'][void_machine].energy_usage = '100kW'
+                data.raw.furnace[void_machine] = nil
+            end
         end
 
         for name, recipe in pairs(data.raw.recipe) do
@@ -256,16 +260,19 @@ if mods['angelspetrochem'] then
                 end
             end
         end
-        fun.tech_remove_recipe('angels-water-treatment', 'angels-clarifier')
-    
-        RECIPE('angels-clarifier'):add_unlock('angels-water-treatment-2')
+        -- water treatment and the clarifier are angelsrefining's, not angelspetrochem's
+        if mods['angelsrefining'] then
+            fun.tech_remove_recipe('angels-water-treatment', 'angels-clarifier')
 
-        RECIPE('angels-water-void-water-saline'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
-        RECIPE('angels-water-void-water-purified'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
+            RECIPE('angels-clarifier'):add_unlock('angels-water-treatment-2')
 
-        TECHNOLOGY('angels-water-treatment-2'):add_prereq('filtration')
+            RECIPE('angels-water-void-water-saline'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
+            RECIPE('angels-water-void-water-purified'):add_ingredient({type = "item", name = "filtration-media", amount = 1}):add_unlock('angels-water-treatment-2')
 
-        data.raw['assembling-machine']['angels-clarifier'].crafting_speed = 5
+            TECHNOLOGY('angels-water-treatment-2'):add_prereq('filtration')
+
+            data.raw['assembling-machine']['angels-clarifier'].crafting_speed = 5
+        end
     end
 end
 

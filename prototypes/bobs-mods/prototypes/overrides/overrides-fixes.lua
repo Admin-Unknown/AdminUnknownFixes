@@ -11,7 +11,10 @@ if mods['bobassembly'] then
 
 end
 if mods['bobplates'] then
-    data.raw.recipe['nitrogen'].hidden = false
+    -- nitrogen is pyrawores', not bobplates'
+    if data.raw.recipe['nitrogen'] then
+        data.raw.recipe['nitrogen'].hidden = false
+    end
 
     data.raw['assembling-machine']['assembling-machine-3'].allowed_effects = {"consumption", "speed", "productivity", "pollution"}
 

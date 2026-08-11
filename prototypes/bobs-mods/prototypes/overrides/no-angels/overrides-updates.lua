@@ -15,8 +15,8 @@ if mods['bobplates'] then
 			--zinc
             data.raw.resource['ore-zinc'] = nil
             data.raw['autoplace-control']['ore-zinc'] = nil
-            data.raw.resource['zinc-ore'].minable.fluid_amount = 40
-            data.raw.resource['zinc-ore'].minable.required_fluid = 'aromatics'
+            data.raw.resource['bob-zinc-ore'].minable.fluid_amount = 40
+            data.raw.resource['bob-zinc-ore'].minable.required_fluid = 'aromatics'
             --lead
             data.raw.resource['ore-lead'] = nil
             data.raw['autoplace-control']['ore-lead'] = nil
@@ -28,8 +28,8 @@ if mods['bobplates'] then
             --nickel
             data.raw.resource['ore-nickel'] = nil
             data.raw['autoplace-control']['ore-nickel'] = nil
-            data.raw.resource['nickel-ore'].minable.fluid_amount = 40
-            data.raw.resource['nickel-ore'].minable.required_fluid = "syngas"
+            data.raw.resource['bob-nickel-ore'].minable.fluid_amount = 40
+            data.raw.resource['bob-nickel-ore'].minable.required_fluid = "syngas"
             --titanium
             data.raw.resource['ore-titanium'] = nil
             data.raw['autoplace-control']['ore-titanium'] = nil
@@ -38,12 +38,12 @@ if mods['bobplates'] then
             --tin
             data.raw.resource['ore-tin'] = nil
             data.raw['autoplace-control']['ore-tin'] = nil
-            data.raw.resource['tin-ore'].minable.fluid_amount = 100
-            data.raw.resource['tin-ore'].minable.required_fluid = "steam"
+            data.raw.resource['bob-tin-ore'].minable.fluid_amount = 100
+            data.raw.resource['bob-tin-ore'].minable.required_fluid = "steam"
 		end
 
-		data.raw.recipe['silver-plate'].enabled = false
-    	data.raw.recipe['silver-plate'].hidden = true
+		data.raw.recipe['bob-silver-plate'].enabled = false
+    	data.raw.recipe['bob-silver-plate'].hidden = true
 
     	RECIPE('silver-plate-1'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 18})
     	RECIPE('slz-pulp-01'):add_ingredient({type = "item", name = "bob-silver-ore", amount = 4})
@@ -121,18 +121,20 @@ if mods['bobelectronics'] then
 
         RECIPE('pcb4'):add_ingredient({type = "fluid", name = "bob-ferric-chloride-solution", amount = 100})
 
-        TECHNOLOGY('bob-repair-pack-3'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-drills-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-area-drills-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-vehicle-shield-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-personal-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-fluid-generator-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-vehicle-roboport-modular-equipment-1'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-electronics-machine-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-electric-energy-accumulators-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-electric-substation-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-advanced-research'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
-        TECHNOLOGY('bob-vehicle-laser-defense-equipment-2'):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+        -- these belong to bobmining, bobpower, bobtech and friends, none of which
+        -- bobelectronics brings along, and TECHNOLOGY() on a missing tech is fatal
+        for _, tech in pairs({
+            'bob-repair-pack-3', 'bob-drills-2', 'bob-area-drills-2',
+            'bob-vehicle-shield-equipment-1', 'bob-personal-roboport-modular-equipment-1',
+            'bob-fluid-generator-2', 'bob-vehicle-roboport-modular-equipment-1',
+            'bob-electronics-machine-2', 'bob-electric-energy-accumulators-2',
+            'bob-electric-substation-2', 'bob-advanced-research',
+            'bob-vehicle-laser-defense-equipment-2',
+        }) do
+            if data.raw.technology[tech] then
+                TECHNOLOGY(tech):add_prereq('basic-electronics'):remove_prereq('advanced-circuit')
+            end
+        end
 	end
 
 	if mods['pyalienlife'] then

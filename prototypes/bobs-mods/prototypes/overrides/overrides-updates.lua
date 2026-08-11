@@ -33,7 +33,8 @@ if mods['bobelectronics'] then
             RECIPE('assembling-machine-1'):add_ingredient({type = "item", name = "inductor1", amount = 3})
 
             TECHNOLOGY('automation'):add_prereq('coal-processing-1')
-            if settings.startup["bobmods-logistics-beltoverhaul"].value then
+            -- both the setting and logistics-0 come from boblogistics
+            if mods['boblogistics'] and settings.startup["bobmods-logistics-beltoverhaul"].value then
                 TECHNOLOGY('logistics-0'):add_prereq('coal-processing-1')
             end
             

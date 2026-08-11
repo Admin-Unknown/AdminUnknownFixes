@@ -1,108 +1,25 @@
+-- Productivity for Py's creature/plant modules. Most belong to pyalienlife and numal to
+-- pyalternativeenergy, both optional, and the setting that pulls this file in says nothing
+-- about which of them is installed, so every module is looked up before it is touched.
+-- Cadaveric arum is the one module carrying an -a suffix the others do not.
+local sinners = {
+    'tree', 'seaweed', 'moss', 'sap-tree', 'ulric', 'sea-sponge', 'ralesia', 'mukmoux',
+    'arthurian', 'tuuphra', 'navens', 'yotoi', 'dhilmos', 'scrondrix', 'rennea', 'phadai',
+    'auog', 'fish', 'yaedols', 'dingrits', 'kmauts', 'vonix', 'grod', 'phagnot', 'bhoddos',
+    'xeno', 'trits', 'kicalk', 'vrauks', 'xyhiphoe', 'korlex', 'fawogae', 'moondrop',
+    'cottongut', 'guar', 'arqad', 'simik', 'zungror', 'numal',
+}
 
---mk03
-data.raw.module['tree-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['seaweed-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['moss-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['sap-tree-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['ulric-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['sea-sponge-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['ralesia-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['mukmoux-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['arthurian-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['tuuphra-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['navens-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['yotoi-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['dhilmos-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['scrondrix-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['rennea-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['phadai-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['auog-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['fish-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['yaedols-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['dingrits-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['kmauts-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['vonix-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['grod-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['phagnot-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['bhoddos-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['xeno-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['trits-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['kicalk-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['cadaveric-arum-mk03-a'].effect.productivity = {bonus = 0.01}
-data.raw.module['vrauks-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['xyhiphoe-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['korlex-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['fawogae-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['moondrop-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['cottongut-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['guar-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['arqad-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['simik-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['zungror-mk03'].effect.productivity = {bonus = 0.01}
-data.raw.module['numal-mk03'].effect.productivity = {bonus = 0.01}
-
---mk04
-data.raw.module['tree-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['seaweed-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['moss-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['sap-tree-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['ulric-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['sea-sponge-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['ralesia-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['mukmoux-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['arthurian-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['tuuphra-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['navens-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['yotoi-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['dhilmos-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['scrondrix-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['rennea-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['phadai-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['auog-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['fish-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['yaedols-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['dingrits-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['kmauts-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['vonix-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['grod-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['phagnot-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['bhoddos-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['xeno-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['trits-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['kicalk-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['cadaveric-arum-mk04-a'].effect.productivity = {bonus = 0.02}
-data.raw.module['vrauks-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['xyhiphoe-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['korlex-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['fawogae-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['moondrop-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['cottongut-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['guar-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['arqad-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['simik-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['zungror-mk04'].effect.productivity = {bonus = 0.02}
-data.raw.module['numal-mk04'].effect.productivity = {bonus = 0.02}
-
---[[
-local mods3 = {}
-local mods4 = {}
-
-for m, mod in pairs(data.raw.module) do
-    --log(mod.name)
-    if string.match(mod.name, 'mk03') == 'mk03' then
-        local modname = mod.name
-        table.insert(mods3, modname)
+for tier, bonus in pairs({['mk03'] = 0.01, ['mk04'] = 0.02}) do
+    for _, sinner in pairs(sinners) do
+        local module = data.raw.module[sinner .. '-' .. tier]
+        if module then
+            module.effect.productivity = {bonus = bonus}
+        end
     end
 
-    if string.match(mod.name, 'mk04') == 'mk04' then
-        log(mod.name)
-        local modname = mod.name
-        table.insert(mods4, modname)
+    local arum = data.raw.module['cadaveric-arum-' .. tier .. '-a']
+    if arum then
+        arum.effect.productivity = {bonus = bonus}
     end
-
 end
-
-log(serpent.block(mods3))
-
-log(serpent.block(mods4))
-]]--

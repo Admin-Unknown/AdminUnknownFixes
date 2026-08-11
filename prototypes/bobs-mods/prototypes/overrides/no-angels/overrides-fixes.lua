@@ -99,8 +99,11 @@ if mods['bobequipment'] then
 		TECHNOLOGY('bob-exoskeleton-equipment-2'):add_pack('production-science-pack')
 		TECHNOLOGY('bob-exoskeleton-equipment-2'):add_prereq('machine-components-mk04'):add_prereq('power-armor')
 
-		TECHNOLOGY('laika'):remove_prereq('exoskeleton-equipment')
-		TECHNOLOGY('laika'):add_prereq('bob-exoskeleton-equipment-2')
+		-- laika is pyalienlife's
+		if mods['pyalienlife'] then
+			TECHNOLOGY('laika'):remove_prereq('exoskeleton-equipment')
+			TECHNOLOGY('laika'):add_prereq('bob-exoskeleton-equipment-2')
+		end
 
 		fun.results_replacer('exoskeleton-equipment', 'exoskeleton-equipment', 'bob-exoskeleton-equipment-2')
 		fun.results_replacer('bob-exoskeleton-equipment-2', 'bob-exoskeleton-equipment-2', 'exoskeleton-equipment')

@@ -81,7 +81,7 @@ foreach ($file in $ourFiles) {
         foreach ($m in [regex]::Matches($line, $quoted)) {
             $name = $m.Groups[1].Value
             if ($upstream.Contains($name) -or $ourDefs.Contains($name)) { continue }
-            if ($name.Length -lt 4 -or $name -notmatch '-') { continue }
+            if ($name.Length -lt 4) { continue }
             if ($Filter -and $name -notlike "*$Filter*") { continue }
             if (-not $found.ContainsKey($name)) { $found[$name] = @() }
             $found[$name] += ("{0}:{1}" -f $file.FullName.Replace($root + '\', ''), $lineNumber)
@@ -98,9 +98,9 @@ foreach ($name in ($found.Keys | Sort-Object)) {
     if ($tokens.Count -gt 1) {
         $withoutFirst = ($tokens[1..($tokens.Count - 1)]) -join '-'
         if ($upstream.Contains($withoutFirst)) { $candidates += $withoutFirst }
-        foreach ($prefix in 'bob-', 'angels-', 'py-') {
-            if ($upstream.Contains($prefix + $name)) { $candidates += ($prefix + $name) }
-        }
+    }
+    foreach ($prefix in 'bob-', 'angels-', 'py-') {
+        if ($upstream.Contains($prefix + $name)) { $candidates += ($prefix + $name) }
     }
     # a candidate is only useful if some mod actually defines a prototype by that name
     $candidates = @($candidates | Sort-Object -Unique | Where-Object { $owner.ContainsKey($_) -and $_ -ne $name })

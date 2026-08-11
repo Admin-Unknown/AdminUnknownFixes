@@ -11,7 +11,7 @@ if mods['boblogistics'] then
       --robots
       fun.remove_recipe_unlock('construction-robot')
    end
-   if mods['pyalienlife'] then
+   if mods['pyalienlife'] and mods['bobmining'] then
         TECHNOLOGY("bob-drills-2"):add_pack("py-science-pack-1"):add_prereq("electric-mining-drill"):remove_prereq("electronics")
         TECHNOLOGY("bob-area-drills-2"):add_pack("py-science-pack-1"):add_prereq("electric-mining-drill"):remove_prereq("electronics")
    end
