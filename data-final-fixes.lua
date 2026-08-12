@@ -113,7 +113,10 @@ require("prototypes/compatibility/fix-mismatched-next-upgrade")
 -- Once every mod has finished adding results to each other's recipes. The shapes go first:
 -- the icon pass reads the results of every recipe, and the mods that load after this one
 -- still have their final-fixes to run.
-require('prototypes/compatibility/normalise-recipe-items')()
+-- Every item and every fluid there will be is in the game by now, which is the one point at
+-- which an entry asking for an item as though it were a fluid can be told apart from one
+-- asking for something a later mod was going to add.
+require('prototypes/compatibility/normalise-recipe-items'){ correct_types = true }
 require("prototypes/compatibility/fix-missing-recipe-icons")
 
 -- Same idea for the technology tree, once every mod has finished rearranging it. The science

@@ -222,8 +222,11 @@ if mods['angelspetrochem'] then
         if data.raw.technology["melamine"] then
             TECHNOLOGY("melamine"):add_prereq("angels-resins")
         end
-        if data.raw.recipe["melamine-resin"] then
-            RECIPE("melamine-resin"):add_ingredient({ type = "fluid", name = "saps", amount = 10 })
+        -- saps is pyalienlife's, and pyhightech having the recipe says nothing about that. It
+        -- is an item there and always has been, so asking for it as a fluid gets as far as the
+        -- end of the load and then stops on a fluid of that name not existing
+        if data.raw.recipe["melamine-resin"] and data.raw.item["saps"] then
+            RECIPE("melamine-resin"):add_ingredient({ type = "item", name = "saps", amount = 10 })
         end
         if data.raw.fluid["angels-gas-urea"] and data.raw.item["urea"] then
             require('__AdminUnknownFixes__/prototypes/angels-mods/prototypes/recipes/urea')

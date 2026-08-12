@@ -48,6 +48,9 @@ require('functions/pypp-recipe-meta-guard')
 require('functions/pypp-technology-missing-shim')
 
 -- Anything this mod has just written to a recipe, put into the form the game takes, so that
--- the mods walking every recipe in data-updates find nothing they cannot read. The extend
--- guard runs this again at the top of that stage, which is the part that catches the rest.
+-- the mods walking every recipe in data-updates find nothing they cannot read.
 require('prototypes/compatibility/normalise-recipe-items')()
+
+-- And again, of its own accord, immediately before each of Angel's override passes, which is
+-- the walk that stops on anything left in the old form and is the one we cannot be in front of.
+require('prototypes/compatibility/tidy-recipes-before-angels-walks')

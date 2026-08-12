@@ -1,4 +1,23 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.28
+Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure on melamine-resin, reported as "fluid with name 'saps' does not exist". This mod adds saps to that recipe and had been calling it a fluid. It is an item in pyalienlife and always has been, so the name was real, the recipe was real, and the two only fell out at the end of the load, in a message naming neither the mod nor the line that did it
+    - The recipe belongs to pyhightech and saps to pyalienlife, and having the one says nothing about having the other, so the addition now asks for saps to be there as well as the recipe
+    - Where an entry names something real but calls it the wrong kind, and the name is plainly the other kind, it is now read as the other kind at the end of the load and said so in the log. That can only be told apart from a thing a later mod was going to add once every mod has finished adding, which is why it happens there and not with the rest of the recipe tidying
+  Modding:
+    - check-prototype-names.ps1 knew saps was real and let it through. The base game is not in othermodsource, so a name any upstream recipe asks for counts as proof the name exists, and that proof was being read as though it settled the kind as well. It does not: every upstream mention of saps is an item, and this one asked for a fluid. Upstream mentions now carry the kind, and only a mention of the same kind will do
+    - Being put in a hand or a chest says the name is an item, since nothing else can be, so those mentions carry a kind too
+
+---------------------------------------------------------------------------------------------------
+Version: 2.1.27
+Date: 2026-08-12
+  Bugfixes:
+    - angelsaddons-storage still stopped the load with "table index is nil" after 2.1.26, because putting the recipes into shape only helps if it happens before somebody walks them, and 2.1.26 guessed at when that would be. It walks them in data-updates, and this mod loads after it, so nothing done in that stage arrives in time
+    - Angel's keeps that walk in a field of a table it leaves in the global state, and all sixteen places that start one read the field at the moment they call. So the pass now sits in front of it: whoever starts a walk, in whatever stage, the ingredients and results are put into the form the game takes first, and then the walk runs exactly as it always did
+    - That is the whole of the load order problem gone rather than worked around. There is nothing to keep in step as mods are turned on and off, and the extend guard is no longer needed for this failure, only for the bobpower one it was written for
+
+---------------------------------------------------------------------------------------------------
 Version: 2.1.26
 Date: 2026-08-12
   Bugfixes:

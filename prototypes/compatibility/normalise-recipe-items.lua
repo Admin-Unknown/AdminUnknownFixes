@@ -23,6 +23,17 @@ local function fluid_exists(name)
     return data.raw.fluid ~= nil and data.raw.fluid[name] ~= nil
 end
 
+local function item_exists(name)
+    for _, prototypes in pairs(data.raw) do
+        local prototype = prototypes[name]
+        -- read past the pypostprocessing metatable, which answers for absent fields with its
+        -- own helpers and would make an item of everything. stack_size is what every item has
+        -- and nothing else does, which saves listing the twenty-odd types that count as one
+        if type(prototype) == 'table' and rawget(prototype, 'stack_size') then return true end
+    end
+    return false
+end
+
 local function kind_of(name)
     return fluid_exists(name) and 'fluid' or 'item'
 end
@@ -41,7 +52,29 @@ local function describe(entry)
     return '{' .. table.concat(parts, ', ') .. '}'
 end
 
-local function tidy(list, recipe_name, field)
+-- An entry can name something real and still call it the wrong thing, and the game does not
+-- look until the end of the load, where it says only that a fluid of that name does not exist
+-- and leaves the recipe that asked to be found by hand. Where the name is not the kind it is
+-- called but is plainly the other, it is read as the other. Both kinds have to be settled
+-- before this can be told apart from a thing not defined yet, so it is only done in
+-- data-final-fixes, once every mod has put everything it has into the game.
+local function correct_kind(entry, where)
+    if entry.type == 'fluid' and not fluid_exists(entry.name) and item_exists(entry.name) then
+        entry.type = 'item'
+        log('AUF: ' .. where .. ' asks for ' .. entry.name .. ' as a fluid, and the only ' ..
+            entry.name .. ' there is is an item. Read as an item')
+        return true
+    end
+    if entry.type == 'item' and not item_exists(entry.name) and fluid_exists(entry.name) then
+        entry.type = 'fluid'
+        log('AUF: ' .. where .. ' asks for ' .. entry.name .. ' as an item, and the only ' ..
+            entry.name .. ' there is is a fluid. Read as a fluid')
+        return true
+    end
+    return false
+end
+
+local function tidy(list, recipe_name, field, correct_types)
     local where = recipe_name .. ' ' .. field
     local changed = false
 
@@ -90,6 +123,8 @@ local function tidy(list, recipe_name, field)
                 log('AUF: ' .. where .. ' asks for ' .. tostring(entry.name) ..
                     ' without saying whether it is an item or a fluid. Read as ' .. entry.type)
                 changed = true
+            elseif correct_types and correct_kind(entry, where) then
+                changed = true
             end
             tidied[#tidied + 1] = entry
         elseif type(entry[1]) == 'string' then
@@ -108,7 +143,10 @@ local function tidy(list, recipe_name, field)
     return tidied, changed
 end
 
-return function()
+-- options.correct_types asks for the item-called-a-fluid check as well, which only means
+-- anything once every mod has finished adding items and fluids
+return function(options)
+    local correct_types = options ~= nil and options.correct_types == true
     local repaired = 0
 
     for name, recipe in pairs(data.raw.recipe or {}) do
@@ -117,7 +155,7 @@ return function()
             -- its own helpers, and a helper is not a list of ingredients
             local list = rawget(recipe, field)
             if type(list) == 'table' then
-                local tidied, changed = tidy(list, name, field)
+                local tidied, changed = tidy(list, name, field, correct_types)
                 if changed then
                     recipe[field] = tidied
                     repaired = repaired + 1

@@ -242,6 +242,8 @@ Add-Definitions $ourFiles
 $upstreamReads = [System.Collections.Generic.HashSet[string]]::new()
 $upstreamCategories = [System.Collections.Generic.HashSet[string]]::new()
 $upstreamConsumables = [System.Collections.Generic.HashSet[string]]::new()
+# the same, but only where upstream said which kind the name is, as "item|name" or "fluid|name"
+$upstreamConsumableTypes = [System.Collections.Generic.HashSet[string]]::new()
 foreach ($file in $upstreamFiles) {
     $text = [System.IO.File]::ReadAllText($file.FullName)
     foreach ($m in [regex]::Matches($text, 'data\.raw' + $typeAndName)) {
@@ -259,19 +261,38 @@ foreach ($file in $upstreamFiles) {
             foreach ($type in $ref.Types) { [void]$upstreamCategories.Add($type + '|' + $ref.Name) }
         }
         # an upstream mod putting a name in a recipe is proof that it is something a recipe can
-        # ask for, which is the only evidence available for the base game's own items
-        foreach ($ref in (Get-IngredientRefs $line)) { [void]$upstreamConsumables.Add($ref.Name) }
-        foreach ($m in [regex]::Matches($line, $stackForm)) { [void]$upstreamConsumables.Add($m.Groups[1].Value) }
+        # ask for, which is the only evidence available for the base game's own items. Where it
+        # also says which of the two kinds the name is, that is kept: a name being real is not
+        # the same as it being the kind we are asking for it as, and taking the one for the
+        # other is how a fluid called saps got into melamine-resin
+        foreach ($ref in (Get-IngredientRefs $line)) {
+            [void]$upstreamConsumables.Add($ref.Name)
+            if ($ref.Kind -ne 'either') { [void]$upstreamConsumableTypes.Add($ref.Kind + '|' + $ref.Name) }
+        }
+        # only an item is ever put in a hand or a chest, so that form says the kind as well
+        foreach ($m in [regex]::Matches($line, $stackForm)) {
+            [void]$upstreamConsumables.Add($m.Groups[1].Value)
+            [void]$upstreamConsumableTypes.Add('item|' + $m.Groups[1].Value)
+        }
     }
 }
 foreach ($key in $upstreamReads) {
     $type, $name = $key -split '\|', 2
-    if ($itemTypes -contains $type -or $type -eq 'fluid') { [void]$upstreamConsumables.Add($name) }
+    if ($itemTypes -contains $type) {
+        [void]$upstreamConsumables.Add($name)
+        [void]$upstreamConsumableTypes.Add('item|' + $name)
+    } elseif ($type -eq 'fluid') {
+        [void]$upstreamConsumables.Add($name)
+        [void]$upstreamConsumableTypes.Add('fluid|' + $name)
+    }
 }
 # The base game is not in othermodsource, so one of its items is only known here if some mod
 # happens to mention it, and nearly all of them do. Green wire is the exception: not one mod
 # in the folder names it, though several hand out a red one.
-foreach ($name in @('green-wire')) { [void]$upstreamConsumables.Add($name) }
+foreach ($name in @('green-wire')) {
+    [void]$upstreamConsumables.Add($name)
+    [void]$upstreamConsumableTypes.Add('item|' + $name)
+}
 
 $exitCode = 0
 
@@ -309,8 +330,16 @@ foreach ($check in $Check) {
                         }
                     }
                     # the base game's own items are not in othermodsource, so an upstream recipe
-                    # asking for the name stands in for a definition we cannot see
-                    if (-not $known -and $upstreamConsumables.Contains($ref.Name)) { $known = $true }
+                    # asking for the name stands in for a definition we cannot see. Where we
+                    # have said which kind we want, only an upstream recipe wanting the same
+                    # kind will do
+                    if (-not $known) {
+                        $known = if ($ref.Kind -eq 'either') {
+                            $upstreamConsumables.Contains($ref.Name)
+                        } else {
+                            $upstreamConsumableTypes.Contains($ref.Kind + '|' + $ref.Name)
+                        }
+                    }
                     if ($known) { continue }
 
                     $label = "{0} (as {1})" -f $ref.Name, $(if ($ref.Kind -eq 'either') { 'an ingredient' } else { $ref.Kind })

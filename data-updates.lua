@@ -64,6 +64,9 @@ require("functions/patch-pypp-impossible-research-validation")
 -- data-final-fixes is still to come, and Angel's walks all the recipes again in theirs.
 require('prototypes/compatibility/normalise-recipe-items')()
 
+-- In case Angel's had not put its override table out yet when our data.lua ran.
+require('prototypes/compatibility/tidy-recipes-before-angels-walks')
+
 -- Last point we control before any data-final-fixes runs, so this is where the
 -- recipe helpers have to be made safe for every mod that final-fixes ahead of us
 -- (pycoalprocessing calls recipe:has_category on all of them). The stamps are
