@@ -46,3 +46,8 @@ require('functions/pypp-recipe-meta-guard')
 
 -- No-op TECHNOLOGY() for optional Bob's techs that pypostprocessing touches without guards.
 require('functions/pypp-technology-missing-shim')
+
+-- Anything this mod has just written to a recipe, put into the form the game takes, so that
+-- the mods walking every recipe in data-updates find nothing they cannot read. The extend
+-- guard runs this again at the top of that stage, which is the part that catches the rest.
+require('prototypes/compatibility/normalise-recipe-items')()

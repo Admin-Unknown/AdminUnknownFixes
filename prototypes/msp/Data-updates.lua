@@ -1,63 +1,46 @@
+-- Each science pack gains the three More Science Packs items that sit at its tier. This was
+-- written as {"name", 1}, which is how 1.1 took an ingredient and how nothing takes one now:
+-- pypostprocessing reads the name out of the table, finds nothing there, and stops the load
+-- trying to say so. The pack a tier belongs to is named once and the three items are added in
+-- a loop, which is the same work with the names in one place rather than forty.
+local tiers = {
+	{ packs = { 'py-science-pack-1', 'py-science-pack-1-turd' }, first = 1 },
+	{ packs = { 'logistic-science-pack' }, first = 4 },
+	{ packs = { 'military-science-pack' }, first = 7 },
+	{ packs = { 'py-science-pack-2', 'py-science-pack-2-turd' }, first = 10 },
+	{ packs = { 'chemical-science-pack' }, first = 13 },
+	{ packs = { 'py-science-pack-3', 'py-science-pack-3-turd' }, first = 16 },
+	{ packs = { 'production-science-pack' }, first = 19 },
+	{ packs = { 'py-science-pack-4', 'py-science-pack-4-turd' }, first = 22 },
+	{ packs = { 'utility-science-pack' }, first = 25 },
+	{ packs = { 'space-science-pack' }, first = 28 },
+}
+
 if mods['pyalienlife'] then
-	--py1
-	RECIPE('py-science-pack-1'):add_ingredient({"more-science-pack-1", 1})
-	RECIPE('py-science-pack-1'):add_ingredient({"more-science-pack-2", 1})
-	RECIPE('py-science-pack-1'):add_ingredient({"more-science-pack-3", 1})
-	RECIPE('py-science-pack-1-turd'):add_ingredient({"more-science-pack-1", 1})
-	RECIPE('py-science-pack-1-turd'):add_ingredient({"more-science-pack-2", 1})
-	RECIPE('py-science-pack-1-turd'):add_ingredient({"more-science-pack-3", 1})
-	--logi
-	RECIPE('logistic-science-pack'):add_ingredient({"more-science-pack-4", 1})
-	RECIPE('logistic-science-pack'):add_ingredient({"more-science-pack-5", 1})
-	RECIPE('logistic-science-pack'):add_ingredient({"more-science-pack-6", 1})
-	--military
-	RECIPE('military-science-pack'):add_ingredient({"more-science-pack-7", 1})
-	RECIPE('military-science-pack'):add_ingredient({"more-science-pack-8", 1})
-	RECIPE('military-science-pack'):add_ingredient({"more-science-pack-9", 1})
-	--py2
-	RECIPE('py-science-pack-2'):add_ingredient({"more-science-pack-10", 1})
-	RECIPE('py-science-pack-2'):add_ingredient({"more-science-pack-11", 1})
-	RECIPE('py-science-pack-2'):add_ingredient({"more-science-pack-12", 1})
-	RECIPE('py-science-pack-2-turd'):add_ingredient({"more-science-pack-10", 1})
-	RECIPE('py-science-pack-2-turd'):add_ingredient({"more-science-pack-11", 1})
-	RECIPE('py-science-pack-2-turd'):add_ingredient({"more-science-pack-12", 1})
-	--chem
-	RECIPE('chemical-science-pack'):add_ingredient({"more-science-pack-13", 1})
-	RECIPE('chemical-science-pack'):add_ingredient({"more-science-pack-14", 1})
-	RECIPE('chemical-science-pack'):add_ingredient({"more-science-pack-15", 1})
-	--py3
-	RECIPE('py-science-pack-3'):add_ingredient({"more-science-pack-16", 1})
-	RECIPE('py-science-pack-3'):add_ingredient({"more-science-pack-17", 1})
-	RECIPE('py-science-pack-3'):add_ingredient({"more-science-pack-18", 1})
-	RECIPE('py-science-pack-3-turd'):add_ingredient({"more-science-pack-16", 1})
-	RECIPE('py-science-pack-3-turd'):add_ingredient({"more-science-pack-17", 1})
-	RECIPE('py-science-pack-3-turd'):add_ingredient({"more-science-pack-18", 1})
-	--prod
-	RECIPE('production-science-pack'):add_ingredient({"more-science-pack-19", 1})
-	RECIPE('production-science-pack'):add_ingredient({"more-science-pack-20", 1})
-	RECIPE('production-science-pack'):add_ingredient({"more-science-pack-21", 1})
-	--py4
-	RECIPE('py-science-pack-4'):add_ingredient({"more-science-pack-22", 1})
-	RECIPE('py-science-pack-4'):add_ingredient({"more-science-pack-23", 1})
-	RECIPE('py-science-pack-4'):add_ingredient({"more-science-pack-24", 1})
-	RECIPE('py-science-pack-4-turd'):add_ingredient({"more-science-pack-22", 1})
-	RECIPE('py-science-pack-4-turd'):add_ingredient({"more-science-pack-23", 1})
-	RECIPE('py-science-pack-4-turd'):add_ingredient({"more-science-pack-24", 1})
-	--util
-	RECIPE('utility-science-pack'):add_ingredient({"more-science-pack-25", 1})
-	RECIPE('utility-science-pack'):add_ingredient({"more-science-pack-26", 1})
-	RECIPE('utility-science-pack'):add_ingredient({"more-science-pack-27", 1})
-	--spaaaaaaaaaace
-	RECIPE('space-science-pack'):add_ingredient({"more-science-pack-28", 1})
-	RECIPE('space-science-pack'):add_ingredient({"more-science-pack-29", 1})
-	RECIPE('space-science-pack'):add_ingredient({"more-science-pack-30", 1})
+	for _, tier in pairs(tiers) do
+		for _, pack in pairs(tier.packs) do
+			for offset = 0, 2 do
+				RECIPE(pack):add_ingredient({
+					type = 'item',
+					name = 'more-science-pack-' .. (tier.first + offset),
+					amount = 1,
+				})
+			end
+		end
+	end
 end
 
 --this code is by Honktown
-for name, lab in pairs(data.raw.lab) do
-    for k, input in pairs(lab.inputs) do
-        if string.find(input, 'more-science-pack-', 1, "plain") then
-            lab.inputs[k] = nil
-        end
-    end
+-- The labs are told to stop taking the More Science Packs items, since the packs themselves
+-- now carry them. Clearing each entry in place left a hole in the middle of the list, and a
+-- list with a hole in it is only half a list to everything that reads it afterwards, so what
+-- is kept is gathered into a new one instead.
+for _, lab in pairs(data.raw.lab) do
+	local kept = {}
+	for _, input in pairs(lab.inputs or {}) do
+		if not string.find(input, 'more-science-pack-', 1, 'plain') then
+			kept[#kept + 1] = input
+		end
+	end
+	lab.inputs = kept
 end

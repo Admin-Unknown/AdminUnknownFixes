@@ -1,6 +1,21 @@
 ---------------------------------------------------------------------------------------------------
-Version: 2.1.24
+Version: 2.1.26
 Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure in angelsaddons-storage, reported as "table index is nil" in angelsrefining's override-functions.lua. Angel's walks every recipe in the game early in data-updates and reads each ingredient and each result as a table with a name in it. It found one without, took the nothing it got back, and tried to use it as a key
+    - Factorio 2.0 stopped taking the shorthand pair that 1.1 allowed for ingredients and results, and every mod has been through its own files for that, but it still turns up in what mods write to each other's recipes while loading, where the game does not look at any of it until long after Angel's has walked it
+    - So every ingredient and every result is now put into the form the game itself asks for, before anybody walks them: the shorthand written out in full, a name given on its own written out in full, an entry that never says whether it is an item or a fluid read as whichever it turns out to be, and anything naming nothing at all taken out, since there is no telling what it was meant to be. Each one is named in the log with the recipe it came from
+    - The pass needs to run before Angel's looks, and this mod loads after Angel's, so the extend guard calls it at the top of data-updates. That is the last moment before the walk. Without the guard the pass still runs, but only in time for the stages after the one that breaks, so 0-auf-extend-guard 0.0.3 is worth having
+    - The one place this mod still wrote the 1.1 shorthand itself was the More Science Packs file, where all forty-two additions were in it. Those never reached Angel's: pypostprocessing reads the name out first, finds nothing, and stops the load trying to say so, which is what anyone running that mod would have got
+    - That file also cleared each lab input in place, leaving a hole in the middle of the list, and a list with a hole in it is only half a list to everything that reads it afterwards. What is kept is gathered into a new one now
+
+---------------------------------------------------------------------------------------------------
+Version: 2.1.25
+Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure on jetpack-1, reported as "item with name 'py-science-pack-1' does not exist". Py's four science packs all come from pyalienlife and nowhere else, but a mod that wants to cost its research in them checks for whichever py mod it happens to know about and then names one. Jetpack does this, which is why turning pypetroleumhandling on stopped the load in a mod that has nothing to do with it
+    - Every technology is now looked over at the end of the load and anything it is researched with that nothing installed provides is taken out, rather than naming the technologies this happens to. The same goes for the packs a lab will accept, which fail the same way
+    - A technology left costing nothing would be researched the instant it was clicked, so the last pack is replaced with automation science rather than removed, keeping the count it asked for. Every technology changed either way is named in the log, so the ones that matter can be given a considered cost
   Bugfixes:
     - Fix the load failure on rf-rare-earth-mine, reported by reverse-factory as "item with name 'bob-red-inserter' does not exist". The recipe it was reversing is py's rare earth mine, which this mod had told to ask for a red inserter, and the name of that is not the name of an item
     - With Bob's inserter overhaul on there is a red inserter between the yellow and the fast one, but it is only ever an entity: Bob's builds it out of the long handed inserter, which keeps its own name and gains the red icon. So bob-red-inserter cannot go in a recipe at all, and the mine now asks for long-handed-inserter

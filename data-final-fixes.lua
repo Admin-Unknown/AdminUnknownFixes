@@ -110,10 +110,15 @@ require("prototypes/compatibility/fix-bob-lab2-research-inputs")
 -- Last pass over the upgrade chains, once every mod has finished resizing things.
 require("prototypes/compatibility/fix-mismatched-next-upgrade")
 
--- Once every mod has finished adding results to each other's recipes.
+-- Once every mod has finished adding results to each other's recipes. The shapes go first:
+-- the icon pass reads the results of every recipe, and the mods that load after this one
+-- still have their final-fixes to run.
+require('prototypes/compatibility/normalise-recipe-items')()
 require("prototypes/compatibility/fix-missing-recipe-icons")
 
--- Same idea for the technology tree, once every mod has finished rearranging it.
+-- Same idea for the technology tree, once every mod has finished rearranging it. The science
+-- packs come after the bob-lab-2 fix above, so that anything it hands the lab is checked too.
+require("prototypes/compatibility/fix-missing-science-packs")
 require("prototypes/compatibility/fix-mine-entity-triggers")
 require("prototypes/compatibility/break-technology-cycles")
 

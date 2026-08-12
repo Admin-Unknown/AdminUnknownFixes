@@ -60,6 +60,10 @@ end
 -- Load-order fallback: suppress pypp impossible-to-research (hidden prerequisite) check until our data-final-fixes.
 require("functions/patch-pypp-impossible-research-validation")
 
+-- Same pass as at the end of our data.lua, for whatever this stage wrote. Every mod's
+-- data-final-fixes is still to come, and Angel's walks all the recipes again in theirs.
+require('prototypes/compatibility/normalise-recipe-items')()
+
 -- Last point we control before any data-final-fixes runs, so this is where the
 -- recipe helpers have to be made safe for every mod that final-fixes ahead of us
 -- (pycoalprocessing calls recipe:has_category on all of them). The stamps are
