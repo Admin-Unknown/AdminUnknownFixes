@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.29
+Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure on factory-3-recycling, reported as "item with name 'nexelit-substation' does not exist". Factorissimo asks factory-3 for a nexelit substation, which comes from pyalternativeenergy and from nowhere else, so with the rest of Py installed and that one not, the name leads nowhere. It is the same assumption jetpack makes about the science packs
+    - This mod has always taken names nothing provides out of the ingredients of every recipe, as a side effect of merging duplicate items, which is why factory-3 itself loaded. It never did the same for the results, and the recycler mod builds its recipes by copying one recipe's ingredients into another's results. The copy was made before this mod cleaned the original, so the name lived on in the copy, in a recipe named after a mod that had nothing to do with it
+    - Results are now cleaned the same way. A recipe that ends up making nothing is left alone, since that is how the void recipes work, and a recipe that named the missing thing as the one it is for stops naming it, so the icon pass gives it an icon of whatever it does make
+    - Both sides say what they dropped in the log now. A recipe quietly losing an ingredient is a balance change nobody asked for, and it was happening silently
+
+---------------------------------------------------------------------------------------------------
 Version: 2.1.28
 Date: 2026-08-12
   Bugfixes:
