@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.31
+Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure on the undo shortcut, reported as "technology with name 'construction-robotics' does not exist". 2.1.30 put a Lua proxy in front of data.raw.technology so it could catch Py clearing oil-gathering. The game reads that table with lua_next, which ignores __pairs, so it saw no technologies at all and stopped on the first shortcut that named one
+    - Fix the Clowns-Extended-Minerals load failure on oil-gathering without touching Clowns. The real technology table stays in place; only oil-gathering is pulled out so Py's clear goes through __newindex and becomes a hidden stub written back onto that same table. Clowns can still attach clowns-resource2-liquification, and at the end of the load those Clowns unlocks move onto oil-processing and the stub is removed
+---------------------------------------------------------------------------------------------------
+Version: 2.1.30
+Date: 2026-08-12
+  Bugfixes:
+    - Attempted fix for Clowns-Extended-Minerals indexing oil-gathering after Py removed it. Superseded by 2.1.31; do not use
+---------------------------------------------------------------------------------------------------
 Version: 2.1.29
 Date: 2026-08-12
   Bugfixes:
