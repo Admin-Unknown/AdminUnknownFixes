@@ -38,7 +38,7 @@ end
 
 if mods['angelssmelting'] then
     data.raw.recipe['steel-plate'].hidden = false
-    RECIPE('steel-plate'):add_unlock('steel-processing'):remove_ingredient('gas-oxygen')
+    RECIPE('steel-plate'):add_unlock('steel-processing'):remove_ingredient('angels-gas-oxygen')
 
     if mods['pyrawores'] then
         -- the acetylene technology belongs to pyfusionenergy, which pyrawores does not need

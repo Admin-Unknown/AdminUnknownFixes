@@ -5,7 +5,7 @@ if mods['angelsrefining'] then
     	categories = {"hpf"},
     	energy_required = 1,
     	ingredients = {
-      		{type = "item", name = "stone-crushed", amount = 2}
+      		{type = "item", name = "angels-stone-crushed", amount = 2}
     	},
     	results = {
         	{type = 'item', name = 'stone', amount = 5},

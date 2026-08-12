@@ -179,6 +179,31 @@ function Get-Context([string[]]$lines, [int]$i) {
     return ($context -join "`n")
 }
 
+# Each Bob mod raises a flag on the shared bobmods table as it loads, and testing that flag
+# is as good a guard as testing the mod list. Only the flags one mod alone can raise are
+# listed: logistics is raised by boblogistics and by bobinserters, equipment by bobequipment
+# and by bobvehicleequipment, so neither says which of the two is actually installed.
+$bobFlags = @{
+    assembly    = 'bobassembly'
+    avatars     = 'bobclasses'
+    classes     = 'bobclasses'
+    electronics = 'bobelectronics'
+    enemies     = 'bobenemies'
+    gems        = 'bobores'
+    greenhouse  = 'bobgreenhouse'
+    inserters   = 'bobinserters'
+    lib         = 'boblibrary'
+    migration   = 'boblibrary'
+    mining      = 'bobmining'
+    modules     = 'bobmodules'
+    ores        = 'bobores'
+    plates      = 'bobplates'
+    power       = 'bobpower'
+    revamp      = 'bobrevamp'
+    tech        = 'bobtech'
+    warfare     = 'bobwarfare'
+}
+
 # Testing for a mod also proves everything that mod hard-depends on is present, which is
 # what makes most of these guards adequate: pyalternativeenergy cannot load without
 # pyalienlife, so a block behind it may use pyalienlife's prototypes freely.
@@ -186,6 +211,10 @@ function Get-GuardedMods([string]$context) {
     $named = @()
     foreach ($m in [regex]::Matches($context, 'mods\s*\[\s*["'']([^"'']+)["'']')) {
         $named += $m.Groups[1].Value
+    }
+    foreach ($m in [regex]::Matches($context, 'bobmods\.([a-z]+)')) {
+        $flag = $m.Groups[1].Value
+        if ($bobFlags.ContainsKey($flag)) { $named += $bobFlags[$flag] }
     }
     $mods = Expand-Deps $named
     # comma wrapped, otherwise PowerShell enumerates the set and an empty one returns null

@@ -7,11 +7,11 @@ RECIPE {
     ingredients = {
         {type = 'fluid', name = 'psc', amount = 100},
         {type = 'fluid', name = 'fetal-serum', amount = 100},
-        {type = 'item', name = 'player-brain-2', amount = 1},
+        {type = 'item', name = 'bob-player-brain-2', amount = 1},
         {type = 'item', name = 'bio-scafold', amount = 2},
         {type = 'item', name = 'immunosupressants', amount = 1},
     },
     results = {
-        {type = 'item', name = 'player-head-2', amount = 2},
+        {type = 'item', name = 'bob-player-head-2', amount = 2},
     },
 }:add_unlock("bob-bodies-2")

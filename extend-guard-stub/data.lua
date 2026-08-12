@@ -17,13 +17,12 @@
 -- function in the field, we answer for the field itself: reads get ours, writes are kept as
 -- what ours should call. Whoever wraps it later ends up inside us rather than around us.
 
+-- the field ordinarily, or through a metatable if the game ever provides it that way
 local real_extend = rawget(data, 'extend')
-if type(real_extend) ~= 'function' then return end
-
--- nothing in the base game or in this modpack puts a metatable on data, and if that ever
--- changes, leaving it be is safer than guessing how the two should combine
-if getmetatable(data) then
-    log('AUF: something already answers for the data table, so data:extend is left alone')
+if type(real_extend) ~= 'function' then real_extend = data.extend end
+if type(real_extend) ~= 'function' then
+    log('AUF: data:extend is not a function, so there is nothing here to stand in front of. ' ..
+        'The guard is doing nothing this load')
     return
 end
 
@@ -79,23 +78,60 @@ local function guard(self, prototypes)
     return result
 end
 
+-- An earlier version stood aside if anything already answered for the data table, on the
+-- grounds that combining the two was guesswork. That turned the whole mod into a silent
+-- no-op in exactly the case nobody would think to check, so now it goes underneath instead
+-- and every key but extend is passed straight through to whatever was there before.
+local underneath = getmetatable(data)
+if underneath then
+    log('AUF: something already answers for the data table. The guard has gone underneath it ' ..
+        'and passes everything but extend straight through')
+end
+
+local function ask_underneath(key)
+    local answer = underneath and underneath.__index
+    if type(answer) == 'function' then return answer(data, key) end
+    if type(answer) == 'table' then return answer[key] end
+    return nil
+end
+
+local function tell_underneath(key, value)
+    local listener = underneath and underneath.__newindex
+    if type(listener) == 'function' then return listener(data, key, value) end
+    if type(listener) == 'table' then listener[key] = value return end
+    rawset(data, key, value)
+end
+
 setmetatable(data, {
     __index = function(_, key)
         if key == 'extend' then return guard end
-        return nil
+        return ask_underneath(key)
     end,
-    __newindex = function(unlucky_table, key, value)
+    __newindex = function(_, key, value)
         -- pypostprocessing installs its wrapper once for each mod that pulls in its library,
         -- and each one does the same work as the last, so keeping only the newest costs
         -- nothing. A wrapper that did something of its own would need more care than this.
         if key == 'extend' then
             innermost = value
+            _G.__auf_extend_guard_writes = (_G.__auf_extend_guard_writes or 0) + 1
         else
-            rawset(unlucky_table, key, value)
+            tell_underneath(key, value)
         end
     end,
 })
 rawset(data, 'extend', nil)
+
+-- 0.0.1 installed without a word and, on at least one setup, still did not end up in the
+-- chain: the load stopped in pypostprocessing exactly as though the guard were not there,
+-- with no frame from this file between the two. Nothing in the base game's dataloader or in
+-- any mod checked writes over the field the way that would need, so rather than guess at it
+-- again, the install now says what it did and whether it took.
+if data.extend == guard then
+    log('AUF: the extend guard is in place. Whatever wraps data:extend from here on runs inside it')
+else
+    log('AUF: the extend guard did not take the field. data:extend still answers with ' ..
+        tostring(data.extend) .. ', so the load will stop the same way it did without this mod')
+end
 
 -- AdminUnknownFixes carries the same repair for when this mod is not installed. Two of them
 -- would be one too many: its wrapper would read the field, find ours, and put itself between

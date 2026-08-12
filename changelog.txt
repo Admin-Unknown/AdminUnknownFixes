@@ -1,4 +1,43 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.24
+Date: 2026-08-12
+  Bugfixes:
+    - Fix the load failure on rf-rare-earth-mine, reported by reverse-factory as "item with name 'bob-red-inserter' does not exist". The recipe it was reversing is py's rare earth mine, which this mod had told to ask for a red inserter, and the name of that is not the name of an item
+    - With Bob's inserter overhaul on there is a red inserter between the yellow and the fast one, but it is only ever an entity: Bob's builds it out of the long handed inserter, which keeps its own name and gains the red icon. So bob-red-inserter cannot go in a recipe at all, and the mine now asks for long-handed-inserter
+    - The name was picked in the 2.1 rename sweep because it exists upstream, which it does, as the wrong sort of thing. So every name this mod puts in a recipe has now been checked against what kind of prototype it actually is, and eight more were wrong
+    - Four of those would have stopped the load the same way, each behind a mod combination not yet tried: angels-gas-oxygen written as gas-oxygen in the rocket oxidizer capsule, angels-stone-crushed as stone-crushed in the hpf stone recipe, bob-calcium-chloride as calcium-chloride in the sodium carbonate recipe, and bob-player-brain-2 and bob-player-head-2 as their unprefixed names in the immunosupressants recipe
+    - brake-03 in the exoskeleton recipe was never a name at all: py's are brake-mk01 through mk04, and mk03 is the one that belongs beside the other mk03 parts already in there
+    - energy-shield-mk3-equipment is bob-energy-shield-mk3-equipment now, and it comes from bobequipment while everything around it comes from bobclasses, so it is asked for separately and only when bobequipment is installed
+    - Four more were doing nothing rather than stopping the load, because taking an ingredient out of a recipe that has not got it is quietly allowed: gas-oxygen again in the Angel's steel plate recipe, basic-circuit-board for bob-basic-circuit-board in the air filter, rtg for bob-rtg in the player power core, and angels-dueterium-fuel-cell, which is angels-deuterium-fuel-cell spelled wrong and so has never once matched
+  Modding:
+    - check-prototype-names.ps1 has an ingredient mode. The other modes ask whether a name exists; this one asks what it is, because an ingredient has to be an item or a fluid and an entity of the same name will not do. The base game is not in othermodsource, so a name any upstream mod puts in a recipe, or in somebody's hands, counts as proof
+    - It was reading ingredients as prototype definitions, which meant every name used in a recipe vouched for itself and the check could never have failed. An amount is what tells the two apart
+    - It was also reading the worked example inside the block comment in functions.lua as though it were code, and now skips block comments
+    - The two ingredient patterns were written as a two element array, and a comma binds tighter than a plus, so they were concatenated into one and asking for the first of them handed back its first character. It matched every letter t in every mod: seven million of them, and nothing useful
+    - Skipping the lines that cannot match before running a dozen regexes over them takes the whole run from six minutes to thirty seconds
+    - check-optional-deps.ps1 now reads bobmods.plates and its like as a guard. Each Bob mod raises a flag as it loads, and this mod tests those in a few places. Only the flags one mod alone can raise are read: logistics is raised by boblogistics and by bobinserters, so it says nothing about which is there
+---------------------------------------------------------------------------------------------------
+Version: 2.1.23
+Date: 2026-08-12
+  Bugfixes:
+    - 0-auf-extend-guard 0.0.2, which needs downloading separately like the last one. Two things in 0.0.1 could make it do nothing at all without saying so, and either would leave the bobpower error looking exactly as it did before the guard existed
+    - It stood aside if anything already answered for the data table, on the grounds that combining the two was guesswork. It now goes underneath instead, answering for data:extend and passing every other key straight through to whatever was there before
+    - It also gave up if data:extend was not a field it could read directly, which would be so if the game ever handed it out through a metatable of its own. It now looks the ordinary way as well, and only gives up if there is genuinely no function there, which it writes to the log
+    - It now checks that it actually took the field and writes either AUF: the extend guard is in place or AUF: the extend guard did not take the field to the log, naming what answers instead. 0.0.1 installed without a word, which left no way to tell a guard that was working from one that was not there at all
+    - A second line at the end of the data stage says whether the guard was still answering once every mod's data.lua had been and gone, and how many wrappers were laid over it. If something takes it out of the chain partway through, that line is what will say so
+  Info:
+    - Having the zip in the mods folder is not the same as the mod being ticked in the mod list, and enabling it needs a restart. The README says so now, along with how to check the log
+---------------------------------------------------------------------------------------------------
+Version: 2.1.22
+Date: 2026-08-11
+  Bugfixes:
+    - Fix the load failure on urea-gasification, which asked for an icon it had never been given. A recipe shows the icon of what it makes, and with more than one product it shows whichever main_product names. This one makes gas urea and ash and names neither, so there was nothing to show
+    - It could not name one. main_product would have to be the gas, and pypostprocessing looks up whatever a recipe names as an item, which the gas is not. So the recipe now carries Angel's gas urea icon of its own, read from the fluid rather than named as a file, which keeps it right if they redraw it
+    - The recipe has been like this since it was written and only became a problem now, because it is only built when Angel's gas urea and compressed air both exist, and turning on the Py high tech pack is what brought those about
+    - Any recipe left in that state at the end of the load is now given the icon of its first product. This is worth doing generally rather than for the one recipe, because adding a result to somebody else's single-product recipe takes its icon away, and this mod adds results to other mods' recipes throughout. Each one is named in the log, so an icon that looks wrong can be given a considered one
+  Modding:
+    - Checked the 28 recipes this mod writes for the same shape. urea-gasification was the only one
+---------------------------------------------------------------------------------------------------
 Version: 2.1.21
 Date: 2026-08-11
   Bugfixes:

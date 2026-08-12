@@ -2,6 +2,11 @@ if data.raw.fluid['angels-gas-urea'] and data.raw.fluid['angels-gas-compressed-a
 RECIPE {
     type = "recipe",
     name = "urea-gasification",
+    -- A recipe borrows its icon from its single product, or from main_product when there is
+    -- more than one. This has two and cannot name one (see below), so it has to carry its
+    -- own. Taking Angel's gas urea icon rather than naming the file keeps it right if they
+    -- redraw it.
+    icons = table.deepcopy(data.raw.fluid['angels-gas-urea'].icons),
     categories = {"gasifier"},
     enabled = false,
     energy_required = 3,

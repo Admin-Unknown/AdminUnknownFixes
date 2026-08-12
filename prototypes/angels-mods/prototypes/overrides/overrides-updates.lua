@@ -195,7 +195,7 @@ if mods['angelspetrochem'] then
         if mods['pyrawores'] then
             RECIPE('angels-rocket-fuel-capsule'):add_ingredient({type = "fluid", name = "kerosene", amount = 50})
         end
-        RECIPE('angels-rocket-oxidizer-capsule'):add_ingredient({type = "fluid", name = "gas-oxygen", amount = 75})
+        RECIPE('angels-rocket-oxidizer-capsule'):add_ingredient({type = "fluid", name = "angels-gas-oxygen", amount = 75})
     end
     if mods['pyrawores'] then
         data.raw.recipe['angels-air-separation'] = nil
@@ -204,7 +204,7 @@ if mods['angelspetrochem'] then
     if mods['pyfusionenergy'] then
         fun.tech_remove_recipe('fluid-pressurization', 'pressured-air')
         if mods['pypetroleumhandling'] then
-            RECIPE('angels-air-filter'):replace_ingredient('basic-circuit-board', 'small-parts-01')
+            RECIPE('angels-air-filter'):replace_ingredient('bob-basic-circuit-board', 'small-parts-01')
         end
         if mods['pyhightech'] then
             if data.raw.technology["angels-water-treatment"] then

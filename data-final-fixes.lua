@@ -110,6 +110,9 @@ require("prototypes/compatibility/fix-bob-lab2-research-inputs")
 -- Last pass over the upgrade chains, once every mod has finished resizing things.
 require("prototypes/compatibility/fix-mismatched-next-upgrade")
 
+-- Once every mod has finished adding results to each other's recipes.
+require("prototypes/compatibility/fix-missing-recipe-icons")
+
 -- Same idea for the technology tree, once every mod has finished rearranging it.
 require("prototypes/compatibility/fix-mine-entity-triggers")
 require("prototypes/compatibility/break-technology-cycles")

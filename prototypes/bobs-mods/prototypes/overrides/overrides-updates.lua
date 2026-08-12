@@ -53,7 +53,12 @@ if mods['boblogistics'] then
     RECIPE('bob-repair-pack-2'):remove_ingredient("iron-gear-wheel"):add_ingredient({type = "item", name = "repair-pack", amount = 1})
 
     if settings.startup['bobmods-logistics-inserteroverhaul'].value then
-        fun.ingredient_replace('rare-earth-mine','fast-inserter','bob-red-inserter')
+        -- The overhaul puts a red inserter between the yellow and the fast one, and py's rare
+        -- earth mine should ask for that rather than the fast one it was written against.
+        -- The red inserter is only ever an entity: Bob's builds it from the long handed
+        -- inserter item, which keeps its own name and gains the red icon. So the item to name
+        -- here is long-handed-inserter, and bob-red-inserter cannot go in a recipe at all.
+        fun.ingredient_replace('rare-earth-mine','fast-inserter','long-handed-inserter')
     end
 
     if mods['pyindustry'] then
@@ -354,7 +359,7 @@ if mods['bobclasses'] then
     table.insert(data.raw['character']['bob-character-prospector'].flags, 'not-in-made-in')
     if mods['pyhightech'] then
         RECIPE('bob-player-power-core'):set_fields{ categories = {"pa"} }:set_fields{energy_required = 45}
-        RECIPE('bob-player-power-core'):remove_ingredient('battery-mk01'):remove_ingredient('rtg'):remove_ingredient('processing-unit')
+        RECIPE('bob-player-power-core'):remove_ingredient('battery-mk01'):remove_ingredient('bob-rtg'):remove_ingredient('processing-unit')
         RECIPE('bob-player-power-core'):add_ingredient({type = "item", name = "nexelit-battery", amount = 5}):add_ingredient({type = "item", name = "nuclear-sample", amount = 1}):add_ingredient({type = "item", name = "processing-unit", amount = 15})
     end
     if mods['pyalternativeenergy'] then
@@ -449,7 +454,11 @@ if mods['bobclasses'] then
 
         RECIPE('bob-character-fighter-2'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
         RECIPE('bob-character-fighter-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('bob-exoskeleton-equipment-2'):remove_ingredient('bob-player-frame-2')
-        RECIPE('bob-character-fighter-2'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "exoskeleton-equipment", amount = 1}):add_ingredient({type = "item", name = "energy-shield-mk3-equipment", amount = 1}):add_ingredient({type = "fluid", name = "helium", amount = 100})
+        RECIPE('bob-character-fighter-2'):add_ingredient({type = "item", name = "bob-character-balanced-2", amount = 1}):add_ingredient({type = "item", name = "exoskeleton-equipment", amount = 1}):add_ingredient({type = "fluid", name = "helium", amount = 100})
+        -- the mk3 shield belongs to bobequipment, and everything else here to bobclasses
+        if mods['bobequipment'] then
+            RECIPE('bob-character-fighter-2'):add_ingredient({type = "item", name = "bob-energy-shield-mk3-equipment", amount = 1})
+        end
 
         RECIPE('bob-character-miner-2'):set_fields{ categories = {"biofactory"} }:set_fields{energy_required = 50}
         RECIPE('bob-character-miner-2'):remove_ingredient('assembling-machine-2'):remove_ingredient('bob-electric-furnace-2'):remove_ingredient('bob-player-frame-2')

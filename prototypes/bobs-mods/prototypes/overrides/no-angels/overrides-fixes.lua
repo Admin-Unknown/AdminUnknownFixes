@@ -115,7 +115,7 @@ if mods['bobequipment'] then
 		fun.tech_remove_recipe('bob-exoskeleton-equipment-2', 'bob-exoskeleton-equipment-2')
 
 		data.raw.recipe['bob-exoskeleton-equipment-2'].ingredients = nil
-		RECIPE('bob-exoskeleton-equipment-2'):add_ingredient({type = "item", name = "low-density-structure", amount = 2}):add_ingredient({type = "item", name = "mechanical-parts-03", amount = 1}):add_ingredient({type = "item", name = "brake-03", amount = 1}):add_ingredient({type = "item", name = "gearbox-mk03", amount = 1}):add_ingredient({type = "item", name = "hydraulic-system-mk01", amount = 1})
+		RECIPE('bob-exoskeleton-equipment-2'):add_ingredient({type = "item", name = "low-density-structure", amount = 2}):add_ingredient({type = "item", name = "mechanical-parts-03", amount = 1}):add_ingredient({type = "item", name = "brake-mk03", amount = 1}):add_ingredient({type = "item", name = "gearbox-mk03", amount = 1}):add_ingredient({type = "item", name = "hydraulic-system-mk01", amount = 1})
 
 	end
 end

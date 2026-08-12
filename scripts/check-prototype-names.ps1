@@ -8,10 +8,11 @@
     reveals one stale name per crash. This compares names we reference against every quoted
     string in othermodsource, in three groups:
 
-      names     quoted "bob-*"/"angels-*" strings anywhere in our Lua (broadest, noisiest)
-      tech      TECHNOLOGY('x') arguments - pypostprocessing raises on an unknown technology
-      index     data.raw.<type>['x'].field chains - indexing a missing prototype aborts the load
-      category  recipe categories we assign - prototype validation rejects an unknown one
+      names       quoted "bob-*"/"angels-*" strings anywhere in our Lua (broadest, noisiest)
+      tech        TECHNOLOGY('x') arguments - pypostprocessing raises on an unknown technology
+      index       data.raw.<type>['x'].field chains - indexing a missing prototype aborts the load
+      category    recipe categories we assign - prototype validation rejects an unknown one
+      ingredient  names we put in a recipe - these have to be an item or a fluid, specifically
 
     "names" and "tech" only ask whether some mod mentions the name. "index" is stricter and
     asks whether a prototype of that exact type exists, because data.raw.recipe['nitrogen']
@@ -24,7 +25,13 @@
     prototypes in their own right: assigning a recipe to a category nothing defines fails
     validation at the end of the load rather than where the assignment happened.
 
-    Only "tech", "index" and "category" hits can abort a load; "names" hits are usually a
+    "ingredient" exists because a name can be real and still be the wrong sort of thing. Bob's
+    red inserter is an entity built from the long handed inserter item, so bob-red-inserter
+    resolves as an entity and as nothing else, and a recipe asking for one of them fails with
+    "item with name 'bob-red-inserter' does not exist" - a report that reaches you through
+    whichever mod happened to read the recipe rather than through the mod that wrote it.
+
+    Only "tech", "index", "category" and "ingredient" hits can abort a load; "names" hits are usually a
     silently skipped override. A hit is a hint, not proof: names built by concatenation are invisible
     here, and othermodsource only holds the mods checked into this repo, so anything belonging
     to a mod that is not in that folder (angelsindustries, omni*, madclowns*, ...) always
@@ -35,8 +42,8 @@
     pwsh ./scripts/check-prototype-names.ps1 -Check tech,index
 #>
 param(
-    [ValidateSet('names', 'tech', 'index', 'category')]
-    [string[]]$Check = @('names', 'tech', 'index', 'category'),
+    [ValidateSet('names', 'tech', 'index', 'category', 'ingredient')]
+    [string[]]$Check = @('names', 'tech', 'index', 'category', 'ingredient'),
     [string[]]$Prefixes = @('bob-', 'angels-')
 )
 
@@ -112,6 +119,59 @@ function Get-FieldRefs([string]$line) {
     return $refs
 }
 
+# Every type an ingredient or a result is allowed to be. Anything else with the right name is
+# the wrong sort of thing: an entity, a technology, a recipe category.
+$itemTypes = @(
+    'ammo', 'armor', 'blueprint', 'blueprint-book', 'capsule', 'copy-paste-tool',
+    'deconstruction-item', 'gun', 'item', 'item-with-entity-data', 'item-with-inventory',
+    'item-with-label', 'item-with-tags', 'mining-tool', 'module', 'rail-planner',
+    'repair-tool', 'selection-tool', 'space-platform-starter-pack', 'spidertron-remote',
+    'tool', 'upgrade-item'
+)
+
+# the table form, written either way round. Kept as two variables rather than one array
+# because a comma binds tighter than a plus here, so the two would be concatenated into a
+# single pattern and asking for the first of them would hand back its first character.
+$ingredientTypeFirst = 'type\s*=\s*["''](item|fluid)["'']\s*,\s*name\s*=\s*' + $quoted
+$ingredientNameFirst = 'name\s*=\s*' + $quoted + '\s*,\s*type\s*=\s*["''](item|fluid)["'']'
+# the string form. Which of the two kinds it is depends on the recipe, so either will do.
+$ingredientCalls = '(?::|\.)(?:remove_ingredient|remove_result|add_pack|remove_pack)\s*\(\s*' + $quoted
+$ingredientSwap = '(?::|\.)replace_ingredient\s*\(\s*' + $quoted + '\s*,\s*' + $quoted
+# fun.ingredient_replace(recipe, old, new), and the two beside it that read the same way. The
+# recipe is the first argument and is not an ingredient, so it is stepped over.
+$ingredientHelpers = 'fun\.(?:ingredient_replace|results_replacer)\s*\(\s*' + $quoted + '\s*,\s*' + $quoted + '\s*,\s*' + $quoted
+$itemHelper = 'fun\.global_item_replacer\s*\(\s*' + $quoted + '\s*,\s*' + $quoted
+# An upstream mod putting something in a cursor or a chest is naming an item just as surely as
+# a recipe is, and for the base game's own items that is sometimes the only mention there is:
+# red-wire is named nowhere upstream except a tips-and-tricks script that hands you one.
+$stackForm = 'name\s*=\s*' + $quoted + '\s*,\s*count\s*='
+
+function Get-IngredientRefs([string]$line) {
+    $refs = @()
+    foreach ($m in [regex]::Matches($line, $ingredientTypeFirst)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[2].Value; Kind = $m.Groups[1].Value }
+    }
+    foreach ($m in [regex]::Matches($line, $ingredientNameFirst)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[1].Value; Kind = $m.Groups[2].Value }
+    }
+    foreach ($m in [regex]::Matches($line, $ingredientCalls)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[1].Value; Kind = 'either' }
+    }
+    foreach ($m in [regex]::Matches($line, $ingredientSwap)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[1].Value; Kind = 'either' }
+        $refs += [pscustomobject]@{ Name = $m.Groups[2].Value; Kind = 'either' }
+    }
+    foreach ($m in [regex]::Matches($line, $ingredientHelpers)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[2].Value; Kind = 'either' }
+        $refs += [pscustomobject]@{ Name = $m.Groups[3].Value; Kind = 'either' }
+    }
+    foreach ($m in [regex]::Matches($line, $itemHelper)) {
+        $refs += [pscustomobject]@{ Name = $m.Groups[1].Value; Kind = 'either' }
+        $refs += [pscustomobject]@{ Name = $m.Groups[2].Value; Kind = 'either' }
+    }
+    return $refs
+}
+
 function Get-LuaFiles([string]$path, [string[]]$exclude) {
     Get-ChildItem -Path $path -Recurse -File -Include *.lua | Where-Object {
         $file = $_
@@ -138,6 +198,12 @@ function Add-Definitions([System.IO.FileInfo[]]$files) {
     foreach ($file in $files) {
         $lines = [System.IO.File]::ReadAllLines($file.FullName)
         for ($i = 0; $i -lt $lines.Count; $i++) {
+            # An ingredient is written the same way a prototype is, so {type = "item", name =
+            # "bob-red-inserter", amount = 1} would otherwise be read as an item existing under
+            # that name, and every name used in a recipe would vouch for itself. An amount is
+            # what tells the two apart: prototypes do not carry one.
+            if ($lines[$i] -match '\b(amount|amount_min|amount_max|probability|quantity)\s*=') { continue }
+
             # short prototypes such as Angel's recipe categories put type and name on one line
             $pair = [regex]::Match($lines[$i], 'type\s*=\s*' + $quoted + '\s*,\s*name\s*=\s*' + $quoted)
             if ($pair.Success) {
@@ -151,6 +217,12 @@ function Add-Definitions([System.IO.FileInfo[]]$files) {
 
             $d = [regex]::Match($lines[$i], '^\s*name\s*=\s*' + $quoted + '\s*,?\s*$')
             if (-not $d.Success) { continue }
+            # the same ingredient table, written across several lines
+            $spread = $false
+            for ($k = $i + 1; $k -lt [Math]::Min($lines.Count, $i + 4); $k++) {
+                if ($lines[$k] -match '^\s*(amount|amount_min|amount_max|probability|quantity)\s*=') { $spread = $true; break }
+            }
+            if ($spread) { continue }
             $name = $d.Groups[1].Value
             if (-not $definedTypes.ContainsKey($name)) {
                 $definedTypes[$name] = [System.Collections.Generic.HashSet[string]]::new()
@@ -169,6 +241,7 @@ Add-Definitions $ourFiles
 # data.raw.<type>['x'] too" as proof that x exists with that type
 $upstreamReads = [System.Collections.Generic.HashSet[string]]::new()
 $upstreamCategories = [System.Collections.Generic.HashSet[string]]::new()
+$upstreamConsumables = [System.Collections.Generic.HashSet[string]]::new()
 foreach ($file in $upstreamFiles) {
     $text = [System.IO.File]::ReadAllText($file.FullName)
     foreach ($m in [regex]::Matches($text, 'data\.raw' + $typeAndName)) {
@@ -177,12 +250,28 @@ foreach ($file in $upstreamFiles) {
     }
     # base game names such as the crafting category or the raw-material subgroup are defined
     # outside this folder, so take an upstream mod using one as evidence that it exists
+    # a dozen regexes against every line of every upstream mod takes minutes. Almost none of
+    # those lines can match, and the two words below are in all the ones that can, so asking
+    # the cheap question first turns most of those minutes into seconds.
     foreach ($line in ($text -split "`n")) {
+        if ($line -notmatch 'name|categor|group|_type|ingredient|result|_pack') { continue }
         foreach ($ref in (Get-FieldRefs $line)) {
             foreach ($type in $ref.Types) { [void]$upstreamCategories.Add($type + '|' + $ref.Name) }
         }
+        # an upstream mod putting a name in a recipe is proof that it is something a recipe can
+        # ask for, which is the only evidence available for the base game's own items
+        foreach ($ref in (Get-IngredientRefs $line)) { [void]$upstreamConsumables.Add($ref.Name) }
+        foreach ($m in [regex]::Matches($line, $stackForm)) { [void]$upstreamConsumables.Add($m.Groups[1].Value) }
     }
 }
+foreach ($key in $upstreamReads) {
+    $type, $name = $key -split '\|', 2
+    if ($itemTypes -contains $type -or $type -eq 'fluid') { [void]$upstreamConsumables.Add($name) }
+}
+# The base game is not in othermodsource, so one of its items is only known here if some mod
+# happens to mention it, and nearly all of them do. Green wire is the exception: not one mod
+# in the folder names it, though several hand out a red one.
+foreach ($name in @('green-wire')) { [void]$upstreamConsumables.Add($name) }
 
 $exitCode = 0
 
@@ -190,10 +279,50 @@ foreach ($check in $Check) {
     $found = @{}
     foreach ($file in $ourFiles) {
         $lineNumber = 0
+        $inBlockComment = $false
         foreach ($line in [System.IO.File]::ReadAllLines($file.FullName)) {
             $lineNumber++
-            # a name only commented out is not a name the game ever resolves
+            # a name only commented out is not a name the game ever resolves, and the worked
+            # example of a recipe in functions.lua sits inside a block comment
+            $line = [regex]::Replace($line, '--\[\[.*?\]\]', '')
+            if ($inBlockComment) {
+                if ($line -notmatch '\]\]') { continue }
+                $inBlockComment = $false
+                $line = $line -replace '^.*?\]\]', ''
+            }
+            if ($line -match '--\[\[') {
+                $inBlockComment = $true
+                $line = $line -replace '--\[\[.*$', ''
+            }
             if ($line -match '^\s*--') { continue }
+            if ($check -eq 'ingredient') {
+                foreach ($ref in (Get-IngredientRefs $line)) {
+                    $allowed = switch ($ref.Kind) {
+                        'item'  { $itemTypes }
+                        'fluid' { @('fluid') }
+                        default { $itemTypes + @('fluid') }
+                    }
+                    $known = $false
+                    if ($definedTypes.ContainsKey($ref.Name)) {
+                        foreach ($type in $allowed) {
+                            if ($definedTypes[$ref.Name].Contains($type)) { $known = $true; break }
+                        }
+                    }
+                    # the base game's own items are not in othermodsource, so an upstream recipe
+                    # asking for the name stands in for a definition we cannot see
+                    if (-not $known -and $upstreamConsumables.Contains($ref.Name)) { $known = $true }
+                    if ($known) { continue }
+
+                    $label = "{0} (as {1})" -f $ref.Name, $(if ($ref.Kind -eq 'either') { 'an ingredient' } else { $ref.Kind })
+                    if ($definedTypes.ContainsKey($ref.Name) -and $definedTypes[$ref.Name].Count -gt 0) {
+                        $label += " - exists, but only as: " + (($definedTypes[$ref.Name] | Sort-Object) -join ', ')
+                    }
+                    if (-not $found.ContainsKey($label)) { $found[$label] = @() }
+                    $found[$label] += ("{0}:{1}" -f $file.FullName.Replace($root + '\', ''), $lineNumber)
+                }
+                continue
+            }
+
             if ($check -eq 'category') {
                 foreach ($ref in (Get-FieldRefs $line)) {
                     $known = $false
